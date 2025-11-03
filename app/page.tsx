@@ -397,7 +397,7 @@ export default async function HomePage() {
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{project.title}</h3>
                     <p className="text-gray-600 mb-4">{project.description}</p>
-                    {project.beneficiaries && (
+                    {project.beneficiaries > 0 && (
                       <p className="text-teal-600 font-semibold mb-2">{project.beneficiaries} Youth Impacted</p>
                     )}
                     <span className="inline-block px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium">
