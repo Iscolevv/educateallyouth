@@ -17,6 +17,8 @@ export default async function HomePage() {
   let testimonials = []
   let gallery = []
   let newsEvents = []
+  // Fetch volunteer stories
+  let volunteerStories = []
 
   try {
     const { data: projectsData, error: projectsError } = await supabase
@@ -83,6 +85,23 @@ export default async function HomePage() {
     }
   } catch (error) {
     console.error("[v0] Error fetching news/events:", error)
+  }
+
+  // Fetch volunteer stories
+  try {
+    const { data: storiesData, error: storiesError } = await supabase
+      .from("volunteer_stories")
+      .select("*")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+
+    if (storiesError) {
+      console.error("[v0] Error fetching volunteer stories:", storiesError)
+    } else {
+      volunteerStories = storiesData || []
+    }
+  } catch (error) {
+    console.error("[v0] Error fetching volunteer stories:", error)
   }
 
   return (
@@ -710,11 +729,12 @@ export default async function HomePage() {
           </h2>
           <p className="text-center text-gray-600 max-w-3xl mx-auto mb-12 text-lg leading-relaxed fade-in-up">
             Every volunteer has a unique story of impact and transformation. Whether you're mentoring a student,
-            organizing an event, or simply sharing your passion for education, your story matters. We celebrate the
-            everyday heroes who are creating change in their communities. Your journey inspires others to take action,
-            to serve, and to dream bigger. Share your volunteer experience with us and inspire the next generation of
-            changemakers. Together, we're building a movement where education truly reaches all, and every voice counts.
-            What will your story be?
+            organizing a community event, providing healthcare support, helping the elderly, building infrastructure, or
+            simply giving your time to serve others, your story matters. We celebrate the everyday heroes who are
+            creating change in their communities through acts of service and compassion. Your journey inspires others to
+            take action, to serve, and to dream bigger. Share your volunteer experience with us and inspire the next
+            generation of changemakers. Together, we're building a movement where service truly reaches all, and every
+            voice counts. What will your story be?
           </p>
 
           <div className="flex justify-center mb-12 fade-in-up">
@@ -725,7 +745,38 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          {/* Volunteer Stories Feed will be rendered on dedicated page */}
+          {volunteerStories && volunteerStories.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {volunteerStories.map((story) => (
+                <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow fade-in-up">
+                  {story.image_urls && story.image_urls.length > 0 && (
+                    <img
+                      src={story.image_urls[0] || "/placeholder.svg"}
+                      alt={story.project_title}
+                      className="w-full h-48 object-cover"
+                    />
+                  )}
+                  <CardContent className="p-6">
+                    <span className="inline-block px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium mb-3">
+                      {story.category}
+                    </span>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{story.project_title}</h3>
+                    <p className="text-sm text-gray-500 mb-3">
+                      {story.location} • {new Date(story.activity_date).toLocaleDateString()}
+                    </p>
+                    <p className="text-gray-600 line-clamp-3">{story.description}</p>
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <p className="text-sm font-semibold text-gray-900">{story.full_name}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No volunteer stories shared yet. Be the first to share your impact!</p>
+            </div>
+          )}
         </div>
       </section>
 
