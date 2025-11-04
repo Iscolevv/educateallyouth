@@ -709,8 +709,12 @@ export default async function HomePage() {
             Volunteer Stories
           </h2>
           <p className="text-center text-gray-600 max-w-3xl mx-auto mb-12 text-lg leading-relaxed fade-in-up">
-            Be inspired by real stories of community service and impact. Read about volunteers who are making a
-            difference and creating change in their communities. Your story could be next!
+            Every volunteer has a unique story of impact and transformation. Whether you're mentoring a student,
+            organizing an event, or simply sharing your passion for education, your story matters. We celebrate the
+            everyday heroes who are creating change in their communities. Your journey inspires others to take action,
+            to serve, and to dream bigger. Share your volunteer experience with us and inspire the next generation of
+            changemakers. Together, we're building a movement where education truly reaches all, and every voice counts.
+            What will your story be?
           </p>
 
           <div className="flex justify-center mb-12 fade-in-up">

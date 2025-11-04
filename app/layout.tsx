@@ -94,6 +94,43 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="theme-color" content="#0d9488" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "EducateAll Youth Organization",
+              url: "https://educateallyouthorg.co.ke",
+              logo: "https://educateallyouthorg.co.ke/favicon.svg",
+              description:
+                "EducateAll Youth Organization is a non-profit dedicated to inspiring young leaders through education, volunteerism, and community service.",
+              founder: {
+                "@type": "Person",
+                name: "Brian Onyango",
+              },
+              developer: {
+                "@type": "Person",
+                name: "Levis Mokaya",
+                url: "https://www.linkedin.com/in/levis-mokaya",
+                description: "Full-stack developer and technical lead",
+              },
+              sameAs: [
+                "https://www.linkedin.com/in/brian-o-12647a323",
+                "https://www.instagram.com/isco_levv",
+                "https://wa.me/254756288563",
+              ],
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "Customer Service",
+                telephone: "+254756288563",
+                email: "brianonyango1605@gmail.com",
+              },
+              areaServed: "Kenya",
+              foundingDate: "2021-10-04",
+            }),
+          }}
+        />
       </head>
       <body className={`${inter.className} antialiased`}>
         {children}
