@@ -7,6 +7,7 @@ import TestimonialsManager from "@/components/admin/testimonials-manager"
 import GalleryManager from "@/components/admin/gallery-manager"
 import VolunteersManager from "@/components/admin/volunteers-manager"
 import AdminHeader from "@/components/admin/admin-header"
+import VolunteerStoriesManager from "@/components/admin/volunteer-stories-manager"
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -27,12 +28,13 @@ export default async function AdminDashboard() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
 
         <Tabs defaultValue="projects" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="news">News & Events</TabsTrigger>
             <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
             <TabsTrigger value="volunteers">Volunteers</TabsTrigger>
+            <TabsTrigger value="volunteer-stories">Volunteer Stories</TabsTrigger>
           </TabsList>
 
           <TabsContent value="projects">
@@ -53,6 +55,10 @@ export default async function AdminDashboard() {
 
           <TabsContent value="volunteers">
             <VolunteersManager />
+          </TabsContent>
+
+          <TabsContent value="volunteer-stories">
+            <VolunteerStoriesManager />
           </TabsContent>
         </Tabs>
       </div>

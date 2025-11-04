@@ -702,6 +702,29 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Volunteer Stories Section */}
+      <section id="volunteer-stories" className="py-16 md:py-24 bg-gray-50 scroll-mt-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4 text-balance fade-in-up">
+            Volunteer Stories
+          </h2>
+          <p className="text-center text-gray-600 max-w-3xl mx-auto mb-12 text-lg leading-relaxed fade-in-up">
+            Be inspired by real stories of community service and impact. Read about volunteers who are making a
+            difference and creating change in their communities. Your story could be next!
+          </p>
+
+          <div className="flex justify-center mb-12 fade-in-up">
+            <Link href="/volunteer-stories">
+              <Button className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 text-lg">
+                Share Your Volunteer Impact
+              </Button>
+            </Link>
+          </div>
+
+          {/* Volunteer Stories Feed will be rendered on dedicated page */}
+        </div>
+      </section>
+
       {/* Get in Touch Section */}
       <section id="contact" className="py-16 md:py-24 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
