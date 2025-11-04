@@ -927,7 +927,7 @@ export default async function HomePage() {
             <p className="text-gray-400">
               &copy; {new Date().getFullYear()} EducateAll Youth Organization. All rights reserved.
             </p>
-            <p className="text-gray-500 text-sm mt-2">Empowering youth through education and mentorship since 2020</p>
+            <p className="text-gray-500 text-sm mt-2">Empowering youth through education and mentorship since 2021</p>
           </div>
         </div>
       </footer>

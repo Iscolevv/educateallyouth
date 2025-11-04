@@ -4,7 +4,7 @@ import { useState } from "react"
 import useSWR from "swr"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, XCircle, Eye } from "lucide-react"
+import { CheckCircle2, XCircle, Eye, Trash2 } from "lucide-react"
 
 interface VolunteerStory {
   id: string
@@ -57,6 +57,25 @@ export default function VolunteerStoriesManager() {
       })
       if (response.ok) {
         mutate()
+      }
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  const handleDelete = async (storyId: string) => {
+    if (!confirm("Are you sure you want to delete this volunteer story? This action cannot be undone.")) {
+      return
+    }
+    setIsUpdating(true)
+    try {
+      const response = await fetch(`/api/admin/volunteer-stories/${storyId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      })
+      if (response.ok) {
+        mutate()
+        setSelectedStory(null)
       }
     } finally {
       setIsUpdating(false)
@@ -142,6 +161,48 @@ export default function VolunteerStoriesManager() {
         </div>
       </div>
 
+      {/* Approved Stories */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Published Stories</h3>
+        <div className="space-y-4">
+          {approvedStories.length === 0 ? (
+            <p className="text-muted-foreground">No published stories</p>
+          ) : (
+            approvedStories.map((story: VolunteerStory) => (
+              <Card key={story.id}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle>{story.project_title}</CardTitle>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        by {story.full_name} • {story.category}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedStory(story)}>
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700"
+                        onClick={() => handleDelete(story.id)}
+                        disabled={isUpdating}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{story.description.substring(0, 200)}...</p>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+      </div>
+
       {/* Modal for viewing full story */}
       {selectedStory && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -214,6 +275,22 @@ export default function VolunteerStoriesManager() {
                     disabled={isUpdating}
                   >
                     Reject
+                  </Button>
+                </div>
+              )}
+
+              {/* Delete button for approved stories */}
+              {selectedStory.status === "approved" && (
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      handleDelete(selectedStory.id)
+                    }}
+                    disabled={isUpdating}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Story
                   </Button>
                 </div>
               )}
