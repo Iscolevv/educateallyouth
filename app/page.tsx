@@ -975,7 +975,7 @@ export default async function HomePage() {
             // Volunteer form submission
             const volunteerForm = document.getElementById('volunteer-form');
             if (volunteerForm) {
-              volunteerForm.addEventListener('submit', function(e) {
+              volunteerForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const formData = new FormData(volunteerForm);
@@ -985,6 +985,22 @@ export default async function HomePage() {
                 const availability = formData.get('availability') || 'Not specified';
                 const interest = formData.get('interest') || 'Not specified';
                 const message = formData.get('message');
+
+                try {
+                  const response = await fetch('/api/volunteer', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData).toString()
+                  });
+
+                  if (!response.ok) {
+                    console.error('Failed to save volunteer submission');
+                  }
+                } catch (error) {
+                  console.error('Error saving volunteer submission:', error);
+                }
 
                 // Create WhatsApp message
                 const whatsappMessage = \`*New Volunteer Application*
