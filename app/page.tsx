@@ -12,97 +12,19 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 export default async function HomePage() {
   const supabase = await createClient()
 
-  // Fetch projects
-  let projects = []
-  let testimonials = []
-  let gallery = []
-  let newsEvents = []
-  // Fetch volunteer stories
-  let volunteerStories = []
+  const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, storiesResult] = await Promise.all([
+    supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
+    supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
+    supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8),
+    supabase.from("news_events").select("*").eq("published", true).order("event_date", { ascending: false }).limit(3),
+    supabase.from("volunteer_stories").select("*").eq("status", "approved").order("created_at", { ascending: false }),
+  ])
 
-  try {
-    const { data: projectsData, error: projectsError } = await supabase
-      .from("projects")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(6)
-
-    if (projectsError) {
-      console.error("[v0] Error fetching projects:", projectsError)
-    } else {
-      projects = projectsData || []
-    }
-  } catch (error) {
-    console.error("[v0] Error fetching projects:", error)
-  }
-
-  // Fetch testimonials
-  try {
-    const { data: testimonialsData, error: testimonialsError } = await supabase
-      .from("testimonials")
-      .select("*")
-      .order("created_at", { ascending: false })
-
-    if (testimonialsError) {
-      console.error("[v0] Error fetching testimonials:", testimonialsError)
-    } else {
-      testimonials = testimonialsData || []
-    }
-  } catch (error) {
-    console.error("[v0] Error fetching testimonials:", error)
-  }
-
-  // Fetch gallery images
-  try {
-    const { data: galleryData, error: galleryError } = await supabase
-      .from("gallery")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(8)
-
-    if (galleryError) {
-      console.error("[v0] Error fetching gallery:", galleryError)
-    } else {
-      gallery = galleryData || []
-    }
-  } catch (error) {
-    console.error("[v0] Error fetching gallery:", error)
-  }
-
-  // Fetch news & events
-  try {
-    const { data: newsEventsData, error: newsEventsError } = await supabase
-      .from("news_events")
-      .select("*")
-      .eq("published", true)
-      .order("event_date", { ascending: false })
-      .limit(3)
-
-    if (newsEventsError) {
-      console.error("[v0] Error fetching news/events:", newsEventsError)
-    } else {
-      newsEvents = newsEventsData || []
-    }
-  } catch (error) {
-    console.error("[v0] Error fetching news/events:", error)
-  }
-
-  // Fetch volunteer stories
-  try {
-    const { data: storiesData, error: storiesError } = await supabase
-      .from("volunteer_stories")
-      .select("*")
-      .eq("status", "approved")
-      .order("created_at", { ascending: false })
-
-    if (storiesError) {
-      console.error("[v0] Error fetching volunteer stories:", storiesError)
-    } else {
-      volunteerStories = storiesData || []
-    }
-  } catch (error) {
-    console.error("[v0] Error fetching volunteer stories:", error)
-  }
+  const projects = projectsResult.data || []
+  const testimonials = testimonialsResult.data || []
+  const gallery = galleryResult.data || []
+  const newsEvents = newsEventsResult.data || []
+  const volunteerStories = storiesResult.data || []
 
   return (
     <div className="min-h-screen bg-gray-50">
