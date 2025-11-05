@@ -585,6 +585,26 @@ export default async function HomePage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Christabel Aloo Ochieng Card */}
+            <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
+              <CardContent className="p-8">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-pink-600 to-pink-700 flex items-center justify-center text-white text-4xl font-bold mb-4">
+                    CA
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Christabel Aloo Ochieng</h3>
+                  <p className="text-pink-600 font-semibold mb-4">Events & Mobilization Coordinator</p>
+                  <p className="text-gray-600 leading-relaxed">
+                    Christabel Aloo Ochieng is a Law student at Kisii University and serves as the Events & Mobilization
+                    Coordinator at EducateAll Youth Initiative. A passionate advocate for political awareness,
+                    leadership, and youth empowerment, Christabel plays a vital role in coordinating events and
+                    mobilizing audiences, enabling EducateAll Youth Initiative to effectively reach and impact its
+                    target communities in line with the organization's vision.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

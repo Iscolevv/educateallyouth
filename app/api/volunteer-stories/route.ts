@@ -2,6 +2,16 @@ import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { type NextRequest, NextResponse } from "next/server"
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+}
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders })
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
@@ -19,11 +29,11 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!fullName || !email || !projectTitle || !location || !activityDate || !description || !category) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400, headers: corsHeaders })
     }
 
     if (!consentGiven) {
-      return NextResponse.json({ error: "You must consent to share your story" }, { status: 400 })
+      return NextResponse.json({ error: "You must consent to share your story" }, { status: 400, headers: corsHeaders })
     }
 
     // Initialize Supabase server client
@@ -92,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("[v0] Database error:", error)
-      return NextResponse.json({ error: "Failed to submit volunteer story" }, { status: 500 })
+      return NextResponse.json({ error: "Failed to submit volunteer story" }, { status: 500, headers: corsHeaders })
     }
 
     return NextResponse.json(
@@ -100,11 +110,11 @@ export async function POST(request: NextRequest) {
         message: "Your volunteer story has been submitted successfully and is awaiting admin approval.",
         data,
       },
-      { status: 201 },
+      { status: 201, headers: corsHeaders },
     )
   } catch (error) {
     console.error("[v0] Error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500, headers: corsHeaders })
   }
 }
 
@@ -139,12 +149,12 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("[v0] Error fetching stories:", error)
-      return NextResponse.json({ error: "Failed to fetch stories" }, { status: 500 })
+      return NextResponse.json({ error: "Failed to fetch stories" }, { status: 500, headers: corsHeaders })
     }
 
-    return NextResponse.json({ data })
+    return NextResponse.json({ data }, { headers: corsHeaders })
   } catch (error) {
     console.error("[v0] Error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500, headers: corsHeaders })
   }
 }
