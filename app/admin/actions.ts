@@ -381,3 +381,26 @@ export async function deleteLearningPost(id: string) {
   revalidatePath("/admin/dashboard")
   revalidatePath("/learning-hub")
 }
+
+export async function getLearningPosts() {
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Fetching all learning posts for admin")
+
+    const { data, error } = await supabase
+      .from("learning_posts")
+      .select("*")
+      .order("created_at", { ascending: false })
+
+    if (error) {
+      console.error("[v0] Supabase error fetching learning posts:", error)
+      throw new Error(error.message || "Failed to fetch learning posts")
+    }
+
+    console.log("[v0] Learning posts fetched successfully:", data?.length || 0)
+    return data || []
+  } catch (error) {
+    console.error("[v0] Error in getLearningPosts:", error)
+    throw error
+  }
+}

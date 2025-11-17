@@ -6,9 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import LearningPostForm from "./learning-post-form"
 import { deleteLearningPost } from "@/app/admin/actions"
-import { createClient } from "@supabase/supabase-js"
-
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+import { getLearningPosts } from "@/app/admin/actions"
 
 export default function LearningPostsManager() {
   const [posts, setPosts] = useState<any[]>([])
@@ -27,16 +25,7 @@ export default function LearningPostsManager() {
   const fetchPosts = async () => {
     try {
       setIsLoading(true)
-      const { data, error } = await supabase
-        .from("learning_posts")
-        .select("*")
-        .order("created_at", { ascending: false })
-
-      if (error) {
-        console.error("[v0] Error fetching posts:", error)
-        throw error
-      }
-
+      const data = await getLearningPosts()
       setPosts(data || [])
     } catch (error) {
       console.error("[v0] Error fetching posts:", error)
