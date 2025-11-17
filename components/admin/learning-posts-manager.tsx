@@ -20,6 +20,10 @@ export default function LearningPostsManager() {
     fetchPosts()
   }, [])
 
+  const handleFormComplete = async () => {
+    await fetchPosts()
+  }
+
   const fetchPosts = async () => {
     try {
       setIsLoading(true)
@@ -88,7 +92,7 @@ export default function LearningPostsManager() {
     <div className="space-y-4">
       <div>
         <h3 className="text-lg font-semibold mb-4">Create New Post</h3>
-        <LearningPostForm onEditComplete={fetchPosts} />
+        <LearningPostForm onEditComplete={handleFormComplete} />
       </div>
 
       <div className="mt-8">

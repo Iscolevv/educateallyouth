@@ -108,6 +108,9 @@ export default function LearningPostForm({ editItem, onEditComplete }: { editIte
       } else {
         await createLearningPost(data)
         alert("Post added successfully!")
+        setTimeout(() => {
+          onEditComplete?.()
+        }, 500)
       }
 
       // Reset form
