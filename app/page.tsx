@@ -761,7 +761,7 @@ export default async function HomePage() {
             </a>
 
             <a
-              href="mailto:brianonyango1605@gmail.com"
+              href="mailto:educateallyouthorganisation@gmail.com"
               className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               <Mail className="w-5 h-5" />
@@ -879,7 +879,7 @@ export default async function HomePage() {
               <div className="space-y-3 text-gray-400">
                 <p className="flex items-start gap-2">
                   <Mail className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                  <span>brianonyango1605@gmail.com</span>
+                  <span>educateallyouthorganisation@gmail.com</span>
                 </p>
                 <p className="flex items-start gap-2">
                   <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
@@ -908,7 +908,7 @@ export default async function HomePage() {
                   </svg>
                 </a>
                 <a
-                  href="mailto:brianonyango1605@gmail.com"
+                  href="mailto:educateallyouthorganisation@gmail.com"
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   <Mail className="w-5 h-5" />
