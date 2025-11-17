@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
-import { Linkedin, Mail, Instagram, Menu } from "lucide-react"
+import { Linkedin, Mail, Instagram, Menu } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 export default async function HomePage() {
@@ -59,6 +59,9 @@ export default async function HomePage() {
               <a href="#team" className="text-gray-700 hover:text-teal-600 transition-colors">
                 Meet the Team
               </a>
+              <Link href="/learning-hub" className="text-gray-700 hover:text-teal-600 transition-colors">
+                Learning Hub
+              </Link>
               <a href="#volunteer" className="text-gray-700 hover:text-teal-600 transition-colors">
                 Volunteer
               </a>
@@ -100,6 +103,9 @@ export default async function HomePage() {
                   <a href="#team" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
                     Meet the Team
                   </a>
+                  <Link href="/learning-hub" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
+                    Learning Hub
+                  </Link>
                   <a href="#volunteer" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
                     Volunteer
                   </a>
@@ -841,6 +847,9 @@ export default async function HomePage() {
                 <a href="#news" className="block text-gray-400 hover:text-white transition-colors">
                   News & Events
                 </a>
+                <Link href="/learning-hub" className="block text-gray-400 hover:text-white transition-colors">
+                  Learning Hub
+                </Link>
                 <a href="#team" className="block text-gray-400 hover:text-white transition-colors">
                   Meet the Team
                 </a>

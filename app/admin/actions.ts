@@ -299,3 +299,85 @@ export async function deleteGalleryImage(id: string) {
   revalidatePath("/")
   revalidatePath("/admin/dashboard")
 }
+
+// Learning posts actions
+export async function createLearningPost(data: {
+  title: string
+  content: string
+  image_url: string
+  category: string
+  published: boolean
+}) {
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Creating learning post with data:", data)
+
+    const { data: result, error } = await supabase.from("learning_posts").insert(data).select()
+
+    if (error) {
+      console.error("[v0] Supabase error creating learning post:", error)
+      throw new Error(error.message || "Failed to create learning post")
+    }
+
+    console.log("[v0] Learning post created successfully:", result)
+    revalidatePath("/")
+    revalidatePath("/admin/dashboard")
+    revalidatePath("/learning-hub")
+
+    return result
+  } catch (error) {
+    console.error("[v0] Error in createLearningPost:", error)
+    throw error
+  }
+}
+
+export async function updateLearningPost(
+  id: string,
+  data: {
+    title: string
+    content: string
+    image_url: string
+    category: string
+    published: boolean
+  },
+) {
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Updating learning post:", id, data)
+
+    const { data: result, error } = await supabase
+      .from("learning_posts")
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select()
+
+    if (error) {
+      console.error("[v0] Supabase error updating learning post:", error)
+      throw new Error(error.message || "Failed to update learning post")
+    }
+
+    console.log("[v0] Learning post updated successfully:", result)
+    revalidatePath("/")
+    revalidatePath("/admin/dashboard")
+    revalidatePath("/learning-hub")
+
+    return result
+  } catch (error) {
+    console.error("[v0] Error in updateLearningPost:", error)
+    throw error
+  }
+}
+
+export async function deleteLearningPost(id: string) {
+  const supabase = createAdminClient()
+  const { error } = await supabase.from("learning_posts").delete().eq("id", id)
+
+  if (error) {
+    console.error("[v0] Error deleting learning post:", error)
+    throw new Error("Failed to delete learning post")
+  }
+
+  revalidatePath("/")
+  revalidatePath("/admin/dashboard")
+  revalidatePath("/learning-hub")
+}

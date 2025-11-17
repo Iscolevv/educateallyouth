@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ProjectsManager from "@/components/admin/projects-manager"
 import NewsEventsManager from "@/components/admin/news-events-manager"
@@ -8,6 +8,7 @@ import GalleryManager from "@/components/admin/gallery-manager"
 import VolunteersManager from "@/components/admin/volunteers-manager"
 import AdminHeader from "@/components/admin/admin-header"
 import VolunteerStoriesManager from "@/components/admin/volunteer-stories-manager"
+import LearningPostsManager from "@/components/admin/learning-posts-manager"
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -28,13 +29,14 @@ export default async function AdminDashboard() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
 
         <Tabs defaultValue="projects" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-grid">
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="news">News & Events</TabsTrigger>
             <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
             <TabsTrigger value="volunteers">Volunteers</TabsTrigger>
             <TabsTrigger value="volunteer-stories">Volunteer Stories</TabsTrigger>
+            <TabsTrigger value="learning">Learning Hub</TabsTrigger>
           </TabsList>
 
           <TabsContent value="projects">
@@ -59,6 +61,10 @@ export default async function AdminDashboard() {
 
           <TabsContent value="volunteer-stories">
             <VolunteerStoriesManager />
+          </TabsContent>
+
+          <TabsContent value="learning">
+            <LearningPostsManager />
           </TabsContent>
         </Tabs>
       </div>
