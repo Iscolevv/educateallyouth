@@ -13,6 +13,7 @@ export default function LearningPostsManager() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPosts()
@@ -24,12 +25,19 @@ export default function LearningPostsManager() {
 
   const fetchPosts = async () => {
     try {
+      console.log("[v0] LearningPostsManager: Starting to fetch posts")
       setIsLoading(true)
+      setError(null)
+      
       const data = await getLearningPosts()
+      console.log("[v0] LearningPostsManager: Fetched posts:", data?.length)
+      
       setPosts(data || [])
     } catch (error) {
-      console.error("[v0] Error fetching posts:", error)
-      alert("Error loading posts")
+      console.error("[v0] LearningPostsManager: Error fetching posts:", error)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      setError(errorMessage)
+      setPosts([])
     } finally {
       setIsLoading(false)
     }
@@ -84,6 +92,21 @@ export default function LearningPostsManager() {
         <LearningPostForm onEditComplete={handleFormComplete} />
       </div>
 
+      {error && (
+        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-800 font-semibold">Error loading posts:</p>
+          <p className="text-red-600 text-sm mt-1">{error}</p>
+          <Button 
+            onClick={fetchPosts} 
+            className="mt-2" 
+            variant="outline"
+            size="sm"
+          >
+            Try Again
+          </Button>
+        </div>
+      )}
+
       <div className="mt-8">
         <Input
           placeholder="Search posts by title or category..."
@@ -102,7 +125,7 @@ export default function LearningPostsManager() {
             {isLoading ? (
               <p className="text-gray-500">Loading...</p>
             ) : filteredPublished.length === 0 ? (
-              <p className="text-gray-500">No published posts</p>
+              <p className="text-gray-500">No published posts yet. Create your first post above!</p>
             ) : (
               filteredPublished.map((post) => (
                 <div key={post.id} className="border rounded-lg p-4 bg-white">
@@ -143,7 +166,7 @@ export default function LearningPostsManager() {
             {isLoading ? (
               <p className="text-gray-500">Loading...</p>
             ) : filteredDrafts.length === 0 ? (
-              <p className="text-gray-500">No drafts</p>
+              <p className="text-gray-500">No drafts. Uncheck "Publish immediately" to save as draft.</p>
             ) : (
               filteredDrafts.map((post) => (
                 <div key={post.id} className="border rounded-lg p-4 bg-white">
