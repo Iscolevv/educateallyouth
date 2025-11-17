@@ -13,10 +13,10 @@ export default async function LearningHubPage() {
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+      process.env.SUPABASE_SERVICE_ROLE_KEY || ""
     )
     
-    console.log("[v0] Fetching learning posts from learning_posts table...")
+    console.log("[v0] Fetching published learning posts...")
     const { data: posts, error } = await supabase
       .from("learning_posts")
       .select("*")
@@ -25,7 +25,6 @@ export default async function LearningHubPage() {
 
     if (error) {
       console.error("[v0] Supabase error:", error)
-      // Show empty state instead of error
       return (
         <div className="min-h-screen bg-gradient-to-b from-background to-background/50">
           <div className="max-w-6xl mx-auto px-4 py-12">
@@ -43,7 +42,7 @@ export default async function LearningHubPage() {
       )
     }
 
-    console.log("[v0] Posts fetched:", posts?.length || 0)
+    console.log("[v0] Posts fetched successfully:", posts?.length || 0)
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-background/50">

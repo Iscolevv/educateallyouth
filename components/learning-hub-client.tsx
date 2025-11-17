@@ -53,22 +53,22 @@ export default function LearningHubClient({ initialPosts }: LearningHubClientPro
   const paginatedPosts = filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE)
 
   const handleShare = async (post: Post) => {
-    const shareText = `Check out this post from EducateAll Youth Learning Hub: "${post.title}"`
+    const postUrl = `https://educateallyouth.co.ke/learning-hub?post=${post.id}`
+    const shareText = `Check out this learning post from EducateAll Youth: "${post.title}" - ${postUrl}`
+    
     if (navigator.share) {
       try {
         await navigator.share({
-          title: post.title,
+          title: `${post.title} - EducateAll Youth Learning Hub`,
           text: shareText,
-          url: window.location.href,
+          url: postUrl,
         })
       } catch (error) {
         console.error("[v0] Error sharing:", error)
       }
     } else {
-      // Fallback: copy to clipboard
-      const text = `${post.title}\n\n${shareText}`
-      navigator.clipboard.writeText(text)
-      alert("Post link copied to clipboard!")
+      navigator.clipboard.writeText(shareText)
+      alert("Post link copied to clipboard! Share it with others.")
     }
   }
 
