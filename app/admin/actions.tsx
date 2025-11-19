@@ -2,6 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
+import { Resend } from "resend"
 
 // Create admin client with service role key (bypasses RLS)
 function createAdminClient() {
@@ -504,4 +505,135 @@ export async function deleteCreativeSubmission(id: string) {
 
   revalidatePath("/showcase")
   revalidatePath("/admin/dashboard")
+}
+
+async function sendApprovalEmail(
+  authorEmail: string,
+  authorName: string,
+  submissionTitle: string,
+  submissionId: string,
+) {
+  try {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://educateallyouth.co.ke"
+    const submissionLink = `${siteUrl}/showcase?post=${submissionId}`
+
+    const emailContent = `
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
+      .header { background: #1a472a; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+      .content { background: white; padding: 30px; border-radius: 0 0 8px 8px; }
+      .button { display: inline-block; background: #1a472a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+      .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🎉 Your Piece Has Been Approved!</h1>
+      </div>
+      <div class="content">
+        <p>Hello ${authorName},</p>
+        <p>Great news! Your creative submission has been reviewed and approved for publication on the EducateAll Youth Initiative platform.</p>
+        
+        <h3>Submission Details:</h3>
+        <p><strong>Title:</strong> ${submissionTitle}</p>
+        
+        <p>Your work is now live and visible to our community. You can view and share your piece with others using the link below:</p>
+        
+        <center>
+          <a href="${submissionLink}" class="button">View Your Published Work</a>
+        </center>
+        
+        <p><strong>Share Your Work:</strong></p>
+        <p>We encourage you to share this link on social media, WhatsApp, email, and other platforms. Your creativity inspires others in our community!</p>
+        
+        <p>Thank you for contributing to the EducateAll Youth Initiative creative platform. Keep creating amazing content!</p>
+        
+        <p>Best regards,<br><strong>EducateAll Youth Initiative Team</strong></p>
+      </div>
+      <div class="footer">
+        <p>© ${new Date().getFullYear()} EducateAll Youth Initiative. All rights reserved.</p>
+        <p>This is an automated email. Please do not reply to this message.</p>
+      </div>
+    </div>
+  </body>
+</html>
+    `
+
+    // Using Resend for email sending
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "EducateAll Youth <noreply@educateallyouth.co.ke>",
+        to: authorEmail,
+        subject: `Your Work Has Been Published! 🎉 - ${submissionTitle}`,
+        html: emailContent,
+      }),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      console.error("[v0] Resend email error:", error)
+      throw new Error("Failed to send email")
+    }
+
+    console.log("[v0] Approval email sent successfully to:", authorEmail)
+  } catch (error) {
+    console.error("[v0] Error sending approval email:", error)
+    // Don't throw - we don't want email errors to block the approval
+  }
+}
+
+export async function approveCreativeSubmission(id: string) {
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Approving creative submission:", id)
+
+    // Get submission details first
+    const { data: submission, error: fetchError } = await supabase
+      .from("creative_submissions")
+      .select("*")
+      .eq("id", id)
+      .single()
+
+    if (fetchError || !submission) {
+      console.error("[v0] Error fetching submission:", fetchError)
+      throw new Error("Submission not found")
+    }
+
+    // Update published status
+    const { data: result, error } = await supabase
+      .from("creative_submissions")
+      .update({ published: true, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select()
+
+    if (error) {
+      console.error("[v0] Supabase error updating submission:", error)
+      throw new Error(error.message || "Failed to approve submission")
+    }
+
+    await sendApprovalEmail(
+      submission.author_email,
+      submission.author_name,
+      submission.title,
+      id,
+    )
+
+    console.log("[v0] Creative submission approved successfully:", result)
+    revalidatePath("/showcase")
+    revalidatePath("/admin/dashboard")
+    return result
+  } catch (error) {
+    console.error("[v0] Error in approveCreativeSubmission:", error)
+    throw error
+  }
 }
