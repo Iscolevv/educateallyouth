@@ -62,6 +62,9 @@ export default async function HomePage() {
               <Link href="/learning-hub" className="text-gray-700 hover:text-teal-600 transition-colors">
                 Learning Hub
               </Link>
+              <Link href="/showcase" className="text-gray-700 hover:text-teal-600 transition-colors">
+                Youth Showcase
+              </Link>
               <a href="#volunteer" className="text-gray-700 hover:text-teal-600 transition-colors">
                 Volunteer
               </a>
@@ -105,6 +108,9 @@ export default async function HomePage() {
                   </a>
                   <Link href="/learning-hub" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
                     Learning Hub
+                  </Link>
+                  <Link href="/showcase" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
+                    Youth Showcase
                   </Link>
                   <a href="#volunteer" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
                     Volunteer
@@ -849,6 +855,9 @@ export default async function HomePage() {
                 </a>
                 <Link href="/learning-hub" className="block text-gray-400 hover:text-white transition-colors">
                   Learning Hub
+                </Link>
+                <Link href="/showcase" className="block text-gray-400 hover:text-white transition-colors">
+                  Youth Showcase
                 </Link>
                 <a href="#team" className="block text-gray-400 hover:text-white transition-colors">
                   Meet the Team

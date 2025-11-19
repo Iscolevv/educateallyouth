@@ -404,3 +404,103 @@ export async function getLearningPosts() {
     throw error
   }
 }
+
+// Creative submissions actions
+export async function createCreativeSubmission(data: {
+  title: string
+  content: string
+  author_name: string
+  author_email: string
+  author_phone?: string
+  author_bio?: string
+  author_instagram?: string
+  category: string
+  image_url?: string
+}) {
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Creating creative submission with data:", data)
+
+    const { data: result, error } = await supabase
+      .from("creative_submissions")
+      .insert({ ...data, published: false })
+      .select()
+
+    if (error) {
+      console.error("[v0] Supabase error creating creative submission:", error)
+      throw new Error(error.message || "Failed to create creative submission")
+    }
+
+    console.log("[v0] Creative submission created successfully:", result)
+    revalidatePath("/learning-hub")
+    return result
+  } catch (error) {
+    console.error("[v0] Error in createCreativeSubmission:", error)
+    throw error
+  }
+}
+
+export async function getCreativeSubmissions() {
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Fetching all creative submissions for admin")
+
+    const { data, error } = await supabase
+      .from("creative_submissions")
+      .select("*")
+      .order("created_at", { ascending: false })
+
+    if (error) {
+      console.error("[v0] Supabase error fetching creative submissions:", error)
+      throw new Error(error.message || "Failed to fetch creative submissions")
+    }
+
+    console.log("[v0] Creative submissions fetched successfully:", data?.length || 0)
+    return data || []
+  } catch (error) {
+    console.error("[v0] Error in getCreativeSubmissions:", error)
+    throw error
+  }
+}
+
+export async function updateCreativeSubmission(
+  id: string,
+  data: {
+    published: boolean
+  },
+) {
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Updating creative submission:", id, data)
+
+    const { data: result, error } = await supabase
+      .from("creative_submissions")
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select()
+
+    if (error) {
+      console.error("[v0] Supabase error updating creative submission:", error)
+      throw new Error(error.message || "Failed to update creative submission")
+    }
+
+    console.log("[v0] Creative submission updated successfully:", result)
+    revalidatePath("/learning-hub")
+    return result
+  } catch (error) {
+    console.error("[v0] Error in updateCreativeSubmission:", error)
+    throw error
+  }
+}
+
+export async function deleteCreativeSubmission(id: string) {
+  const supabase = createAdminClient()
+  const { error } = await supabase.from("creative_submissions").delete().eq("id", id)
+
+  if (error) {
+    console.error("[v0] Error deleting creative submission:", error)
+    throw new Error("Failed to delete creative submission")
+  }
+
+  revalidatePath("/learning-hub")
+}
