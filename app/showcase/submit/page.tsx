@@ -40,27 +40,20 @@ export default function SubmitPage() {
 
     try {
       setIsSubmitting(true)
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      )
-
-      const fileName = `${Date.now()}-${file.name}`
-      const { error: uploadError, data } = await supabase.storage
-        .from('creative-submissions')
-        .upload(fileName, file)
-
-      if (uploadError) throw uploadError
-
-      const { data: publicUrlData } = supabase.storage
-        .from('creative-submissions')
-        .getPublicUrl(fileName)
-
-      setUploadedImage(publicUrlData.publicUrl)
-      setFormData({ ...formData, image_url: publicUrlData.publicUrl })
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const base64String = event.target?.result as string
+        setUploadedImage(base64String)
+        setFormData({ ...formData, image_url: base64String })
+        setError(null)
+      }
+      reader.onerror = () => {
+        setError('Failed to read image file')
+      }
+      reader.readAsDataURL(file)
     } catch (err) {
-      console.error('Error uploading image:', err)
-      setError(err instanceof Error ? err.message : 'Failed to upload image')
+      console.error('Error processing image:', err)
+      setError(err instanceof Error ? err.message : 'Failed to process image')
     } finally {
       setIsSubmitting(false)
     }
