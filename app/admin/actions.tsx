@@ -522,12 +522,17 @@ async function sendApprovalEmail(
 <html>
   <head>
     <style>
-      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
       .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
-      .header { background: #1a472a; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-      .content { background: white; padding: 30px; border-radius: 0 0 8px 8px; }
-      .button { display: inline-block; background: #1a472a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-      .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+      .header { background: #1a472a; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+      .header h1 { margin: 0; font-size: 28px; }
+      .content { background: white; padding: 40px 30px; border-radius: 0 0 8px 8px; }
+      .content p { margin: 15px 0; }
+      .content h3 { color: #1a472a; margin-top: 25px; margin-bottom: 10px; }
+      .button { display: inline-block; background: #1a472a; color: white; padding: 15px 35px; text-decoration: none; border-radius: 5px; margin: 25px 0; font-weight: bold; }
+      .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; }
+      .submission-box { background: #f0f8f5; border-left: 4px solid #1a472a; padding: 15px; margin: 20px 0; border-radius: 4px; }
+      .submission-box strong { color: #1a472a; }
     </style>
   </head>
   <body>
@@ -536,35 +541,41 @@ async function sendApprovalEmail(
         <h1>🎉 Your Piece Has Been Approved!</h1>
       </div>
       <div class="content">
-        <p>Hello ${authorName},</p>
-        <p>Great news! Your creative submission has been reviewed and approved for publication on the EducateAll Youth Initiative platform.</p>
+        <p>Hello <strong>${authorName}</strong>,</p>
         
-        <h3>Submission Details:</h3>
-        <p><strong>Title:</strong> ${submissionTitle}</p>
+        <p>Exciting news! Your creative submission has been reviewed and <strong>approved for publication</strong> on the EducateAll Youth Initiative platform. Your voice and creativity matter, and we're thrilled to share your work with our community!</p>
         
-        <p>Your work is now live and visible to our community. You can view and share your piece with others using the link below:</p>
+        <div class="submission-box">
+          <strong>✨ Submission Title:</strong><br>${submissionTitle}
+        </div>
         
-        <center>
-          <a href="${submissionLink}" class="button">View Your Published Work</a>
-        </center>
+        <p>Your work is now <strong>live and visible</strong> to our entire community. Showcase your talent and connect with others who appreciate creative expression.</p>
         
-        <p><strong>Share Your Work:</strong></p>
-        <p>We encourage you to share this link on social media, WhatsApp, email, and other platforms. Your creativity inspires others in our community!</p>
+        <h3>📍 View Your Published Work:</h3>
+        <p style="text-align: center;">
+          <a href="${submissionLink}" class="button">View My Published Work</a>
+        </p>
         
-        <p>Thank you for contributing to the EducateAll Youth Initiative creative platform. Keep creating amazing content!</p>
+        <h3>🌍 Share Your Creativity:</h3>
+        <p>We encourage you to share your work across social media platforms and with friends. Your creativity inspires others and helps build a stronger community!</p>
+        <p><strong>Direct Link:</strong> <a href="${submissionLink}" style="color: #1a472a; text-decoration: none;">${submissionLink}</a></p>
         
-        <p>Best regards,<br><strong>EducateAll Youth Initiative Team</strong></p>
+        <p>Thank you for being part of the EducateAll Youth Initiative creative community. Keep creating, keep inspiring!</p>
+        
+        <p>Warm regards,<br><strong>EducateAll Youth Initiative Team</strong><br><a href="https://educateallyouth.co.ke" style="color: #1a472a; text-decoration: none;">educateallyouth.co.ke</a></p>
       </div>
       <div class="footer">
         <p>© ${new Date().getFullYear()} EducateAll Youth Initiative. All rights reserved.</p>
-        <p>This is an automated email. Please do not reply to this message.</p>
+        <p>This is an automated message from our creative platform. Please do not reply to this email.</p>
       </div>
     </div>
   </body>
 </html>
     `
 
-    // Using Resend for email sending
+    console.log("[v0] Sending approval email to:", authorEmail)
+    console.log("[v0] Using Resend API key:", process.env.RESEND_API_KEY ? "✓ Present" : "✗ Missing")
+
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -572,23 +583,27 @@ async function sendApprovalEmail(
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "EducateAll Youth <noreply@educateallyouth.co.ke>",
+        from: "EducateAll Youth <notifications@educateallyouth.co.ke>",
         to: authorEmail,
-        subject: `Your Work Has Been Published! 🎉 - ${submissionTitle}`,
+        reply_to: "educateallyouthorganisation@gmail.com",
+        subject: `🎉 Your Work "${submissionTitle}" Is Now Published!`,
         html: emailContent,
       }),
     })
 
+    const responseData = await response.json()
+    console.log("[v0] Resend API response status:", response.status)
+    console.log("[v0] Resend API response:", responseData)
+
     if (!response.ok) {
-      const error = await response.json()
-      console.error("[v0] Resend email error:", error)
-      throw new Error("Failed to send email")
+      console.error("[v0] Resend email error - Status:", response.status, "Response:", responseData)
+      throw new Error(`Email delivery failed: ${responseData?.message || "Unknown error"}`)
     }
 
-    console.log("[v0] Approval email sent successfully to:", authorEmail)
+    console.log("[v0] ✓ Approval email sent successfully to:", authorEmail)
+    return true
   } catch (error) {
     console.error("[v0] Error sending approval email:", error)
-    // Don't throw - we don't want email errors to block the approval
   }
 }
 
@@ -597,7 +612,6 @@ export async function approveCreativeSubmission(id: string) {
     const supabase = createAdminClient()
     console.log("[v0] Approving creative submission:", id)
 
-    // Get submission details first
     const { data: submission, error: fetchError } = await supabase
       .from("creative_submissions")
       .select("*")
@@ -609,7 +623,8 @@ export async function approveCreativeSubmission(id: string) {
       throw new Error("Submission not found")
     }
 
-    // Update published status
+    console.log("[v0] Fetched submission:", submission.title, "- Email:", submission.author_email)
+
     const { data: result, error } = await supabase
       .from("creative_submissions")
       .update({ published: true, updated_at: new Date().toISOString() })
@@ -621,6 +636,7 @@ export async function approveCreativeSubmission(id: string) {
       throw new Error(error.message || "Failed to approve submission")
     }
 
+    console.log("[v0] Submission published, now sending approval email...")
     await sendApprovalEmail(
       submission.author_email,
       submission.author_name,
@@ -628,7 +644,7 @@ export async function approveCreativeSubmission(id: string) {
       id,
     )
 
-    console.log("[v0] Creative submission approved successfully:", result)
+    console.log("[v0] Creative submission approved and email sent:", result)
     revalidatePath("/showcase")
     revalidatePath("/admin/dashboard")
     return result
