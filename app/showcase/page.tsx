@@ -22,50 +22,71 @@ const CREATIVE_CATEGORIES = [
   'Short Stories',
 ]
 
-export default function ShowcasePage() {
-  const [submissions, setSubmissions] = useState<any[]>([])
-  const [filteredSubmissions, setFilteredSubmissions] = useState<any[]>([])
+export const revalidate = 0;
+
+export default async function ShowcasePage() {
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    )
+
+    const adminSupabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    )
+
+    const { data: submissions, error } = await adminSupabase
+      .from('creative_submissions')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('[v0] Error fetching submissions:', error)
+      throw error
+    }
+
+    return (
+      <ClientShowcase initialSubmissions={submissions || []} />
+    )
+  } catch (error) {
+    console.error('[v0] Error in ShowcasePage:', error)
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-12 px-4">
+        <div className="max-w-6xl mx-auto text-center">
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">Youth Creative Showcase</h1>
+          <p className="text-red-600 mb-8">Error loading submissions. Please try again later.</p>
+        </div>
+      </main>
+    )
+  }
+}
+
+function ClientShowcase({ initialSubmissions }: { initialSubmissions: any[] }) {
+  const [submissions, setSubmissions] = useState<any[]>(initialSubmissions)
+  const [filteredSubmissions, setFilteredSubmissions] = useState<any[]>(initialSubmissions)
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [searchTerm, setSearchTerm] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedPost, setSelectedPost] = useState<any | null>(null)
 
   useEffect(() => {
-    const fetchSubmissions = async () => {
-      try {
-        const supabase = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        )
-
-        const { data, error } = await supabase
-          .from('creative_submissions')
-          .select('*')
-          .eq('published', true)
-          .order('created_at', { ascending: false })
-
-        if (error) throw error
-
-        setSubmissions(data || [])
-        setFilteredSubmissions(data || [])
-
-        const params = new URLSearchParams(window.location.search)
-        const postId = params.get('post')
-        if (postId) {
-          const post = data?.find(p => p.id === postId)
-          if (post) {
-            setSelectedPost(post)
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching submissions:', error)
-      } finally {
-        setIsLoading(false)
+    const params = new URLSearchParams(window.location.search)
+    const postId = params.get('post')
+    if (postId) {
+      const post = initialSubmissions?.find(p => p.id === postId)
+      if (post) {
+        setSelectedPost(post)
       }
     }
-
-    fetchSubmissions()
-  }, [])
+  }, [initialSubmissions])
 
   useEffect(() => {
     let filtered = submissions

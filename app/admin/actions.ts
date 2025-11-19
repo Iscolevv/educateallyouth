@@ -502,5 +502,6 @@ export async function deleteCreativeSubmission(id: string) {
     throw new Error("Failed to delete creative submission")
   }
 
-  revalidatePath("/learning-hub")
+  revalidatePath("/showcase")
+  revalidatePath("/admin/dashboard")
 }
