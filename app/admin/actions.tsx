@@ -2,7 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
-import { Resend } from "resend"
+import Resend from "resend"
 
 // Create admin client with service role key (bypasses RLS)
 function createAdminClient() {
@@ -514,13 +514,29 @@ async function sendApprovalEmail(
   submissionId: string,
 ) {
   try {
+    console.log("[v0] ========== STARTING EMAIL SEND ==========")
+    console.log("[v0] Recipient:", authorEmail)
+    console.log("[v0] Author:", authorName)
+    console.log("[v0] Title:", submissionTitle)
+    console.log("[v0] Submission ID:", submissionId)
+    
+    const apiKey = process.env.RESEND_API_KEY
+    console.log("[v0] RESEND_API_KEY status:", apiKey ? `✓ Present (${apiKey.substring(0, 10)}...)` : "✗ MISSING - EMAIL WILL FAIL!")
+    
+    if (!apiKey) {
+      console.error("[v0] ❌ CRITICAL: RESEND_API_KEY environment variable is not set!")
+      throw new Error("RESEND_API_KEY not configured. Please add it to your Vercel environment variables.")
+    }
+
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://educateallyouth.co.ke"
     const submissionLink = `${siteUrl}/showcase?post=${submissionId}`
+    console.log("[v0] Submission link:", submissionLink)
 
     const emailContent = `
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
     <style>
       body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
       .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
@@ -573,43 +589,58 @@ async function sendApprovalEmail(
 </html>
     `
 
-    console.log("[v0] Sending approval email to:", authorEmail)
-    console.log("[v0] Using Resend API key:", process.env.RESEND_API_KEY ? "✓ Present" : "✗ Missing")
-
+    console.log("[v0] Sending email via Resend API...")
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         from: "EducateAll Youth <educateallyouthorganization@gmail.com>",
-        to: authorEmail,
+        to: [authorEmail],
         subject: `🎉 Your Work "${submissionTitle}" Is Now Published!`,
         html: emailContent,
       }),
     })
 
-    const responseData = await response.json()
+    const responseText = await response.text()
     console.log("[v0] Resend API response status:", response.status)
-    console.log("[v0] Resend API response:", responseData)
+    console.log("[v0] Resend API response body:", responseText)
 
-    if (!response.ok) {
-      console.error("[v0] Resend email error - Status:", response.status, "Response:", responseData)
-      throw new Error(`Email delivery failed: ${responseData?.message || "Unknown error"}`)
+    let responseData
+    try {
+      responseData = JSON.parse(responseText)
+    } catch {
+      responseData = { rawResponse: responseText }
     }
 
-    console.log("[v0] ✓ Approval email sent successfully to:", authorEmail)
+    if (!response.ok) {
+      console.error("[v0] ❌ EMAIL FAILED - Status:", response.status)
+      console.error("[v0] ❌ Error details:", responseData)
+      throw new Error(`Resend API error (${response.status}): ${responseData?.message || responseText}`)
+    }
+
+    console.log("[v0] ✅ SUCCESS! Email sent successfully")
+    console.log("[v0] Email ID:", responseData?.id)
+    console.log("[v0] ========== EMAIL SEND COMPLETE ==========")
     return true
   } catch (error) {
-    console.error("[v0] Error sending approval email:", error)
+    console.error("[v0] ❌❌❌ CRITICAL EMAIL ERROR ❌❌❌")
+    console.error("[v0] Error type:", error instanceof Error ? error.constructor.name : typeof error)
+    console.error("[v0] Error message:", error instanceof Error ? error.message : String(error))
+    console.error("[v0] Full error:", error)
+    console.error("[v0] ========================================")
+    // Don't throw - we don't want the approval to fail if email fails
+    return false
   }
 }
 
 export async function approveCreativeSubmission(id: string) {
   try {
     const supabase = createAdminClient()
-    console.log("[v0] Approving creative submission:", id)
+    console.log("[v0] ========== APPROVAL PROCESS STARTING ==========")
+    console.log("[v0] Approving creative submission ID:", id)
 
     const { data: submission, error: fetchError } = await supabase
       .from("creative_submissions")
@@ -618,11 +649,15 @@ export async function approveCreativeSubmission(id: string) {
       .single()
 
     if (fetchError || !submission) {
-      console.error("[v0] Error fetching submission:", fetchError)
+      console.error("[v0] ❌ Error fetching submission:", fetchError)
       throw new Error("Submission not found")
     }
 
-    console.log("[v0] Fetched submission:", submission.title, "- Email:", submission.author_email)
+    console.log("[v0] ✓ Fetched submission details:")
+    console.log("[v0]   - Title:", submission.title)
+    console.log("[v0]   - Author:", submission.author_name)
+    console.log("[v0]   - Email:", submission.author_email)
+    console.log("[v0]   - Category:", submission.category)
 
     const { data: result, error } = await supabase
       .from("creative_submissions")
@@ -631,24 +666,35 @@ export async function approveCreativeSubmission(id: string) {
       .select()
 
     if (error) {
-      console.error("[v0] Supabase error updating submission:", error)
+      console.error("[v0] ❌ Supabase error updating submission:", error)
       throw new Error(error.message || "Failed to approve submission")
     }
 
-    console.log("[v0] Submission published, now sending approval email...")
-    await sendApprovalEmail(
+    console.log("[v0] ✓ Submission marked as published in database")
+
+    console.log("[v0] Now sending approval email to author...")
+    const emailSent = await sendApprovalEmail(
       submission.author_email,
       submission.author_name,
       submission.title,
       id,
     )
 
-    console.log("[v0] Creative submission approved and email sent:", result)
+    if (emailSent) {
+      console.log("[v0] ✓ Approval email sent successfully!")
+    } else {
+      console.warn("[v0] ⚠️  Email sending failed, but submission was approved")
+    }
+
+    console.log("[v0] Revalidating paths...")
     revalidatePath("/showcase")
     revalidatePath("/admin/dashboard")
+    
+    console.log("[v0] ✅ APPROVAL PROCESS COMPLETE")
+    console.log("[v0] ==========================================")
     return result
   } catch (error) {
-    console.error("[v0] Error in approveCreativeSubmission:", error)
+    console.error("[v0] ❌ Error in approveCreativeSubmission:", error)
     throw error
   }
 }
