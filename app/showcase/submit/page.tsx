@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,7 @@ const CREATIVE_CATEGORIES = [
 
 export default function SubmitPage() {
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -31,6 +32,39 @@ export default function SubmitPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      setIsSubmitting(true)
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      )
+
+      const fileName = `${Date.now()}-${file.name}`
+      const { error: uploadError, data } = await supabase.storage
+        .from('creative-submissions')
+        .upload(fileName, file)
+
+      if (uploadError) throw uploadError
+
+      const { data: publicUrlData } = supabase.storage
+        .from('creative-submissions')
+        .getPublicUrl(fileName)
+
+      setUploadedImage(publicUrlData.publicUrl)
+      setFormData({ ...formData, image_url: publicUrlData.publicUrl })
+    } catch (err) {
+      console.error('Error uploading image:', err)
+      setError(err instanceof Error ? err.message : 'Failed to upload image')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -181,11 +215,35 @@ export default function SubmitPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold mb-2">Image/Poster URL (Optional)</label>
+                <label className="block text-sm font-semibold mb-2">Image/Poster (Optional)</label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex-1"
+                  >
+                    {uploadedImage ? '✓ Image Uploaded' : 'Upload from Device'}
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </div>
+                {uploadedImage && (
+                  <div className="mt-2 p-2 bg-teal-50 rounded text-sm text-teal-700">
+                    Image uploaded successfully
+                  </div>
+                )}
+                <p className="text-xs text-gray-500 mt-2">Or paste URL:</p>
                 <Input
                   value={formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                   placeholder="https://example.com/image.jpg"
+                  className="mt-1"
                 />
               </div>
 
