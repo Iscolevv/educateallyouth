@@ -583,9 +583,8 @@ async function sendApprovalEmail(
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "EducateAll Youth <notifications@educateallyouth.co.ke>",
+        from: "EducateAll Youth <educateallyouthorganization@gmail.com>",
         to: authorEmail,
-        reply_to: "educateallyouthorganisation@gmail.com",
         subject: `🎉 Your Work "${submissionTitle}" Is Now Published!`,
         html: emailContent,
       }),
