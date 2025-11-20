@@ -8,6 +8,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { Linkedin, Mail, Instagram, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -462,7 +463,13 @@ export default async function HomePage() {
             accessible and impactful. Together, we lead with purpose, innovation, and service.
           </p>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {/* Mobile/Tablet Carousel */}
+          <div className="lg:hidden fade-in-up">
+            <TeamCarousel />
+          </div>
+
+          {/* Desktop Grid */}
+          <div className="hidden lg:grid grid-cols-2 xl:grid-cols-2 gap-8 max-w-6xl mx-auto">
             {/* Brian Onyango Card */}
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
