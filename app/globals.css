@@ -196,37 +196,6 @@ a[href*="v0.app"] {
   }
 }
 
-/* Testimonials Carousel Animations */
-.testimonial-carousel-container {
-  position: relative;
-  width: 100%;
-}
-
-.testimonial-fade-animation {
-  animation: testimonialFadeBlick 0.6s ease-in-out;
-}
-
-@keyframes testimonialFadeBlick {
-  0% {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Mobile optimizations for testimonials */
-@media (max-width: 1024px) {
-  .testimonial-fade-animation {
-    animation: testimonialFadeBlick 0.6s ease-in-out;
-  }
-}
-
 /* Instant load for hero section - no animation delay */
 .hero-instant {
   opacity: 1 !important;

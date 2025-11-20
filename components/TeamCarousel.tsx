@@ -47,7 +47,7 @@ const TEAM_MEMBERS = [
   },
 ]
 
-export function TeamCarousel() {
+export default function TeamCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const autoAdvanceRef = useRef<NodeJS.Timeout>()
 
