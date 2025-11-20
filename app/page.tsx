@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
-import { Linkedin, Mail, Instagram, Menu } from 'lucide-react'
+import { Linkedin, Mail, Instagram, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 export default async function HomePage() {
@@ -182,25 +182,25 @@ export default async function HomePage() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="bg-white py-16 md:py-24 scroll-mt-20">
+      <section id="about" className="bg-gradient-to-br from-white via-teal-50 to-white py-16 md:py-24 scroll-mt-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 text-balance fade-in-up">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 text-balance">
             About EducateAll Youth Organization ⭐
           </h2>
-          <div className="space-y-6 text-gray-600 leading-relaxed max-w-4xl fade-in-up">
-            <p className="text-lg">
+          <div className="space-y-8 text-lg leading-relaxed max-w-4xl">
+            <p className="text-gray-800 font-medium">
               Welcome to EducateAll Youth Organization - where dreams meet opportunity! We're a passionate non-profit
               organization on a mission to inspire teenagers to become visionary leaders and impactful members of
               society. For the past 4 incredible years, we've been dedicated to building great leaders and transforming
               society through quality education and mentorship that actually makes a difference!
             </p>
-            <p className="text-lg">
+            <p className="text-gray-800 font-medium">
               Here's what we believe: Education should be an opportunity for EVERYONE, not just a privilege for the
               wealthy. We're breaking down those old barriers and customs that hold young people back. With great
               mentorship and education, we know that everything - and we mean EVERYTHING - is possible! Our commitment?
               To provide every student with a solid stepping stone toward a brighter, better future.
             </p>
-            <p className="text-lg">
+            <p className="text-gray-800 font-medium">
               But we don't stop at traditional education! We're all about developing well-rounded individuals who
               understand their role in society and are equipped with the skills, knowledge, and confidence to make
               meaningful contributions. We invest in our youth because we know that today's teenagers are tomorrow's
@@ -209,21 +209,21 @@ export default async function HomePage() {
           </div>
 
           {/* Stats Section */}
-          <div className="grid md:grid-cols-3 gap-8 mt-16 fade-in-up">
-            <div>
-              <h3 className="text-4xl font-bold text-teal-600 mb-2">4 Years</h3>
+          <div className="grid md:grid-cols-3 gap-8 mt-16">
+            <div className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow border-l-4 border-teal-600">
+              <h3 className="text-5xl font-bold text-teal-600 mb-3">4 Years</h3>
               <p className="text-xl font-semibold text-gray-900 mb-2">Of Impactful Work</p>
-              <p className="text-gray-600">Building leaders and transforming society since our inception</p>
+              <p className="text-gray-700">Building leaders and transforming society since our inception</p>
             </div>
-            <div>
-              <h3 className="text-4xl font-bold text-orange-500 mb-2">500+</h3>
+            <div className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow border-l-4 border-orange-500">
+              <h3 className="text-5xl font-bold text-orange-500 mb-3">500+</h3>
               <p className="text-xl font-semibold text-gray-900 mb-2">Youth Empowered</p>
-              <p className="text-gray-600">Through our comprehensive mentorship and education programs</p>
+              <p className="text-gray-700">Through our comprehensive mentorship and education programs</p>
             </div>
-            <div>
-              <h3 className="text-4xl font-bold text-green-600 mb-2">Countless</h3>
+            <div className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow border-l-4 border-green-600">
+              <h3 className="text-5xl font-bold text-green-600 mb-3">Countless</h3>
               <p className="text-xl font-semibold text-gray-900 mb-2">Lives Transformed</p>
-              <p className="text-gray-600">By breaking barriers and providing opportunities for all</p>
+              <p className="text-gray-700">By breaking barriers and providing opportunities for all</p>
             </div>
           </div>
         </div>

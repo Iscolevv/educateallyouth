@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Share2, Calendar, Tag } from 'lucide-react'
+import { Share2, Calendar, Tag } from "lucide-react"
 
 const CATEGORIES = [
   "Study Tips",
@@ -35,6 +35,16 @@ export default function LearningHubClient({ initialPosts }: LearningHubClientPro
   const [currentPage, setCurrentPage] = useState(1)
   const [expandedPostId, setExpandedPostId] = useState<string | null>(null)
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const postId = params.get("post")
+    if (postId) {
+      setExpandedPostId(postId)
+      // Scroll to top to show the modal
+      window.scrollTo(0, 0)
+    }
+  }, [])
+
   // Filter posts
   const filteredPosts = useMemo(() => {
     return initialPosts.filter((post) => {
@@ -55,7 +65,7 @@ export default function LearningHubClient({ initialPosts }: LearningHubClientPro
   const handleShare = async (post: Post) => {
     const postUrl = `https://educateallyouth.co.ke/learning-hub?post=${post.id}`
     const shareText = `Check out this learning post from EducateAll Youth: "${post.title}" - ${postUrl}`
-    
+
     if (navigator.share) {
       try {
         await navigator.share({
@@ -75,6 +85,8 @@ export default function LearningHubClient({ initialPosts }: LearningHubClientPro
   const getShortDescription = (content: string) => {
     return content.length > 150 ? content.substring(0, 150) + "..." : content
   }
+
+  const expandedPost = initialPosts.find((post) => post.id === expandedPostId)
 
   return (
     <div className="space-y-8">
@@ -196,41 +208,44 @@ export default function LearningHubClient({ initialPosts }: LearningHubClientPro
               </div>
 
               {/* Expanded Content Modal */}
-              {expandedPostId === post.id && (
+              {expandedPostId === post.id && expandedPost && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                   <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
                     <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
-                      <h2 className="text-2xl font-bold">{post.title}</h2>
+                      <h2 className="text-2xl font-bold">{expandedPost.title}</h2>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setExpandedPostId(null)}
+                        onClick={() => {
+                          setExpandedPostId(null)
+                          window.history.replaceState({}, "", "/learning-hub")
+                        }}
                       >
                         ✕
                       </Button>
                     </div>
 
                     <div className="p-6 space-y-4">
-                      {post.image_url && (
+                      {expandedPost.image_url && (
                         <img
-                          src={post.image_url || "/placeholder.svg"}
-                          alt={post.title}
+                          src={expandedPost.image_url || "/placeholder.svg"}
+                          alt={expandedPost.title}
                           className="w-full h-64 object-cover rounded-lg"
                         />
                       )}
 
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span className="bg-teal-50 text-teal-600 px-3 py-1 rounded-full font-semibold">
-                          {post.category}
+                          {expandedPost.category}
                         </span>
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
-                          {new Date(post.created_at).toLocaleDateString()}
+                          {new Date(expandedPost.created_at).toLocaleDateString()}
                         </span>
                       </div>
 
                       <div className="prose prose-sm max-w-none">
-                        {post.content.split("\n").map((paragraph, idx) => (
+                        {expandedPost.content.split("\n").map((paragraph, idx) => (
                           <p key={idx} className="text-foreground leading-relaxed">
                             {paragraph}
                           </p>
@@ -239,7 +254,7 @@ export default function LearningHubClient({ initialPosts }: LearningHubClientPro
 
                       <div className="pt-4 border-t flex gap-2">
                         <Button
-                          onClick={() => handleShare(post)}
+                          onClick={() => handleShare(expandedPost)}
                           className="flex-1 bg-teal-600 hover:bg-teal-700"
                         >
                           <Share2 className="w-4 h-4 mr-2" />
@@ -247,7 +262,10 @@ export default function LearningHubClient({ initialPosts }: LearningHubClientPro
                         </Button>
                         <Button
                           variant="outline"
-                          onClick={() => setExpandedPostId(null)}
+                          onClick={() => {
+                            setExpandedPostId(null)
+                            window.history.replaceState({}, "", "/learning-hub")
+                          }}
                         >
                           Close
                         </Button>

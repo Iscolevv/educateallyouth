@@ -161,11 +161,11 @@ a[href*="v0.app"] {
   visibility: hidden !important;
 }
 
-/* Optimized scroll animations with instant hero load and faster mobile performance */
+/* Optimize fade-in animations to remove delays on About section and below - improves perceived load time */
 .fade-in-up {
   opacity: 0;
-  transform: translateY(20px); /* Reduced from 40px for faster, subtler animation */
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* Faster, simpler easing */
+  transform: translateY(10px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Faster: 0.3s instead of 0.5s */
 }
 
 .fade-in-up.visible {
@@ -175,8 +175,8 @@ a[href*="v0.app"] {
 
 .fade-in {
   opacity: 0;
-  transform: scale(0.98); /* Reduced from 0.95 for subtler effect */
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* Faster, simpler easing */
+  transform: scale(0.99);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Faster: 0.3s instead of 0.6s */
 }
 
 .fade-in.visible {
@@ -184,15 +184,15 @@ a[href*="v0.app"] {
   transform: scale(1);
 }
 
-/* Mobile optimizations - even faster animations */
+/* Mobile optimizations */
 @media (max-width: 768px) {
   .fade-in-up {
-    transform: translateY(15px); /* Smaller transform on mobile */
-    transition-duration: 0.4s; /* Much faster on mobile */
+    transform: translateY(8px);
+    transition-duration: 0.25s; /* Much faster on mobile */
   }
 
   .fade-in {
-    transition-duration: 0.5s; /* Much faster on mobile */
+    transition-duration: 0.25s;
   }
 }
 
