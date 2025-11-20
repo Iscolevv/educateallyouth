@@ -3,6 +3,8 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { TestimonialsCarousel } from "@/components/testimonials-carousel"
+import { Card } from "@/components/ui/card"
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -152,6 +154,48 @@ export default async function HomePage() {
           </div>
           {/* Placeholder for hero image or content */}
           <div className="hidden md:block">{/* Hero image or content goes here */}</div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 text-balance">What People Say</h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Hear from the youth and mentors who have been transformed by our programs
+          </p>
+        </div>
+
+        {/* Mobile Carousel - Hidden on desktop */}
+        <div className="md:hidden mb-12">
+          <TestimonialsCarousel testimonials={testimonials} />
+        </div>
+
+        {/* Desktop Grid - Hidden on mobile */}
+        <div className="hidden md:grid md:grid-cols-3 gap-6">
+          {testimonials.map((testimonial) => (
+            <Card key={testimonial.id} className="p-6">
+              <div className="text-5xl text-teal-600 opacity-30 font-serif leading-none mb-4">"</div>
+              <p className="text-gray-700 leading-relaxed mb-6 italic">{testimonial.content}</p>
+              <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                {testimonial.image_url ? (
+                  <img
+                    src={testimonial.image_url || "/placeholder.svg"}
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold">
+                    {testimonial.name.charAt(0)}
+                  </div>
+                )}
+                <div>
+                  <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
+                  {testimonial.role && <p className="text-sm text-gray-600">{testimonial.role}</p>}
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
       </section>
     </div>
