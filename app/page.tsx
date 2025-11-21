@@ -428,7 +428,7 @@ export default async function HomePage() {
         </div>
       </section>
       {/* Testimonials Section - MOVED */}
-      <section id="testimonials" className="py-16 md:py-24 bg-gradient-to-b from-white to-gray-50 scroll-mt-20">
+      <section id="testimonials" className="py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white scroll-mt-20">
         {" "}
         {/* Updated background and scroll-mt */}
         <div className="container mx-auto px-4">
