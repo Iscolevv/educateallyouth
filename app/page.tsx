@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Linkedin, Mail, Instagram, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
+import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -29,6 +30,8 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {" "}
+      {/* Changed background to gray-50 as per original */}
       {/* Header/Navigation */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -131,7 +134,6 @@ export default async function HomePage() {
           </nav>
         </div>
       </header>
-
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -181,7 +183,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
       {/* About Section */}
       <section id="about" className="bg-gradient-to-br from-white via-teal-50 to-white py-16 md:py-24 scroll-mt-20">
         <div className="container mx-auto px-4">
@@ -229,7 +230,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Our Story Section */}
       <section id="story" className="py-16 md:py-24 bg-gradient-to-br from-teal-50 via-white to-orange-50 scroll-mt-20">
         <div className="container mx-auto px-4">
@@ -324,7 +324,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Projects Section */}
       <section id="projects" className="py-16 md:py-24 bg-gray-50 scroll-mt-20">
         <div className="container mx-auto px-4">
@@ -368,7 +367,6 @@ export default async function HomePage() {
           )}
         </div>
       </section>
-
       {/* Gallery Section */}
       <section id="gallery" className="py-16 md:py-24 bg-white scroll-mt-20">
         <div className="container mx-auto px-4">
@@ -402,56 +400,22 @@ export default async function HomePage() {
           )}
         </div>
       </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-16 md:py-24 bg-gray-50 scroll-mt-20">
+      {/* Testimonials Section - MOVED */}
+      <section id="testimonials" className="py-16 md:py-24 bg-gradient-to-b from-white to-gray-50 scroll-mt-20">
+        {" "}
+        {/* Updated background and scroll-mt */}
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4 text-balance fade-in-up">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4 text-balance">
             What People Say
           </h2>
-          <p className="text-center text-gray-600 max-w-2xl mx-auto mb-12 text-lg fade-in-up">
-            Don't just take our word for it! Hear from the youth, volunteers, and community members whose lives have
-            been touched and transformed by our work. These are real stories from real people!
+          <p className="text-center text-gray-700 max-w-2xl mx-auto mb-12 text-lg font-medium">
+            {" "}
+            {/* Updated text and font */}
+            Real stories from youth, volunteers, and community members transformed by our work.
           </p>
-
-          {testimonials && testimonials.length > 0 ? (
-            <div className="grid md:grid-cols-3 gap-6">
-              {testimonials.map((testimonial) => (
-                <Card key={testimonial.id} className="p-8 relative fade-in-up">
-                  <div className="text-7xl text-teal-600 opacity-30 absolute top-2 left-4 font-serif leading-none">
-                    "
-                  </div>
-                  <div className="relative z-10">
-                    <p className="text-gray-700 leading-relaxed mb-6 text-lg italic pt-8">{testimonial.content}</p>
-                    <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
-                      {testimonial.image_url ? (
-                        <img
-                          src={testimonial.image_url || "/placeholder.svg"}
-                          alt={testimonial.name}
-                          className="w-14 h-14 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-14 h-14 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold text-lg">
-                          {testimonial.name.charAt(0)}
-                        </div>
-                      )}
-                      <div>
-                        <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
-                        {testimonial.role && <p className="text-sm text-gray-600">{testimonial.role}</p>}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No testimonials yet. Check back soon!</p>
-            </div>
-          )}
+          <TestimonialsCarousel testimonials={testimonials} /> {/* Replaced old testimonials rendering with Carousel */}
         </div>
       </section>
-
       {/* Meet the Team Section */}
       <section id="team" className="py-16 md:py-24 bg-white scroll-mt-20">
         <div className="container mx-auto px-4">
@@ -549,7 +513,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
       {/* News & Events Section */}
       <section id="news" className="py-16 md:py-24 bg-white scroll-mt-20">
         <div className="container mx-auto px-4">
@@ -600,7 +563,6 @@ export default async function HomePage() {
           )}
         </div>
       </section>
-
       {/* Volunteer Section */}
       <section id="volunteer" className="py-16 md:py-24 bg-white scroll-mt-20">
         <div className="container mx-auto px-4 max-w-2xl">
@@ -681,7 +643,6 @@ export default async function HomePage() {
           </Card>
         </div>
       </section>
-
       {/* Volunteer Stories Section */}
       <section id="volunteer-stories" className="py-16 md:py-24 bg-gray-50 scroll-mt-20">
         <div className="container mx-auto px-4">
@@ -740,7 +701,6 @@ export default async function HomePage() {
           )}
         </div>
       </section>
-
       {/* Get in Touch Section */}
       <section id="contact" className="py-16 md:py-24 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
@@ -793,7 +753,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Support & Donate Section */}
       <section id="donate" className="py-16 md:py-24 bg-white">
         <div className="container mx-auto px-4 text-center">
@@ -821,7 +780,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="bg-gray-950 text-white py-16">
         <div className="container mx-auto px-4">
@@ -949,7 +907,6 @@ export default async function HomePage() {
           </div>
         </div>
       </footer>
-
       {/* Scroll Animation Script */}
       <script
         dangerouslySetInnerHTML={{
