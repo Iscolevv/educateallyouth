@@ -61,18 +61,6 @@ export function TestimonialsCarousel({ testimonials }) {
             </Card>
           </div>
         </div>
-
-        {/* Progress indicator */}
-        <div className="flex justify-center gap-2 mt-6">
-          {testimonials.map((_, idx) => (
-            <div
-              key={idx}
-              className={`h-1 transition-all duration-300 ${
-                idx === currentIndex ? "w-8 bg-teal-600" : "w-2 bg-gray-300"
-              }`}
-            />
-          ))}
-        </div>
       </div>
 
       {/* Desktop Grid View */}
