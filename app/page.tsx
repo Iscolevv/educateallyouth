@@ -10,6 +10,7 @@ import { Linkedin, Mail, Instagram, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
 import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
+import { HomepageWrapper } from "@/components/homepage-wrapper" // Added import
 
 export const revalidate = 0 // Force no caching to prevent stale content
 export const dynamic = "force-dynamic" // Force dynamic rendering
@@ -1122,17 +1123,23 @@ async function HomePage() {
     })
 
     return (
-      <HomePageContent
-        projects={projects}
-        testimonials={testimonials}
-        gallery={gallery}
-        newsEvents={newsEvents}
-        volunteerStories={volunteerStories}
-      />
+      <HomepageWrapper>
+        <HomePageContent
+          projects={projects}
+          testimonials={testimonials}
+          gallery={gallery}
+          newsEvents={newsEvents}
+          volunteerStories={volunteerStories}
+        />
+      </HomepageWrapper>
     )
   } catch (error) {
     console.error("[v0] Error fetching homepage data:", error)
-    return <HomePageContent projects={[]} testimonials={[]} gallery={[]} newsEvents={[]} volunteerStories={[]} />
+    return (
+      <HomepageWrapper>
+        <HomePageContent projects={[]} testimonials={[]} gallery={[]} newsEvents={[]} volunteerStories={[]} />
+      </HomepageWrapper>
+    )
   }
 }
 
