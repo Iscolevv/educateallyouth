@@ -153,14 +153,14 @@ export default function RootLayout({
 
     {/* PASTE THE FORCED REFRESH SCRIPT HERE */}
     <script dangerouslySetInnerHTML={{
-      __html: `
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted) {
-                // Forces a hard reload by making the URL look unique
-                window.location.href = window.location.href + '?cache_buster=' + new Date().getTime();
-            }
-        });
-      `,
+  __html: `
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            // Simple command forcing a reload from the server
+            window.location.reload(true); 
+        }
+    });
+  `,
     }} />
 
   </body>
