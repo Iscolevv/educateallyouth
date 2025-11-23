@@ -11,57 +11,21 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
 import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
 
-export default async function HomePage() {
-  const supabase = await createClient()
-
-  const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, storiesResult] = await Promise.all([
-    supabase
-      .from("projects")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(6)
-      .then((result) => result)
-      .catch(() => ({ data: [] })),
-    supabase
-      .from("testimonials")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then((result) => result)
-      .catch(() => ({ data: [] })),
-    supabase
-      .from("gallery")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(8)
-      .then((result) => result)
-      .catch(() => ({ data: [] })),
-    supabase
-      .from("news_events")
-      .select("*")
-      .eq("published", true)
-      .order("event_date", { ascending: false })
-      .limit(3)
-      .then((result) => result)
-      .catch(() => ({ data: [] })),
-    supabase
-      .from("volunteer_stories")
-      .select("*")
-      .eq("status", "approved")
-      .order("created_at", { ascending: false })
-      .then((result) => result)
-      .catch(() => ({ data: [] })),
-  ])
-
-  const projects = projectsResult?.data || []
-  const testimonials = testimonialsResult?.data || []
-  const gallery = galleryResult?.data || []
-  const newsEvents = newsEventsResult?.data || []
-  const volunteerStories = storiesResult?.data || []
-
+async function HomePageContent({
+  projects,
+  testimonials,
+  gallery,
+  newsEvents,
+  volunteerStories,
+}: {
+  projects: any[]
+  testimonials: any[]
+  gallery: any[]
+  newsEvents: any[]
+  volunteerStories: any[]
+}) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {" "}
-      {/* Changed background to gray-50 as per original */}
+    <div className="min-h-screen flex flex-col">
       {/* Header/Navigation */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -1104,5 +1068,50 @@ export default async function HomePage() {
       </div>
       {/* End of Floating Buttons */}
     </div>
+  )
+}
+
+export default async function HomePage() {
+  let supabase
+  try {
+    supabase = await createClient()
+  } catch (error) {
+    console.error("[v0] Failed to create Supabase client:", error)
+    // Return page with empty data instead of crashing
+    return <HomePageContent projects={[]} testimonials={[]} gallery={[]} newsEvents={[]} volunteerStories={[]} />
+  }
+
+  console.log("[v0] Fetching homepage data...")
+
+  const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, storiesResult] = await Promise.all([
+    supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
+    supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
+    supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8),
+    supabase.from("news_events").select("*").eq("published", true).order("event_date", { ascending: false }).limit(3),
+    supabase.from("volunteer_stories").select("*").eq("status", "approved").order("created_at", { ascending: false }),
+  ])
+
+  const projects = projectsResult?.data || []
+  const testimonials = testimonialsResult?.data || []
+  const gallery = galleryResult?.data || []
+  const newsEvents = newsEventsResult?.data || []
+  const volunteerStories = storiesResult?.data || []
+
+  console.log("[v0] Homepage data fetched:", {
+    projects: projects.length,
+    testimonials: testimonials.length,
+    gallery: gallery.length,
+    newsEvents: newsEvents.length,
+    volunteerStories: volunteerStories.length,
+  })
+
+  return (
+    <HomePageContent
+      projects={projects}
+      testimonials={testimonials}
+      gallery={gallery}
+      newsEvents={newsEvents}
+      volunteerStories={volunteerStories}
+    />
   )
 }
