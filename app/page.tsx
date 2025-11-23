@@ -15,18 +15,48 @@ export default async function HomePage() {
   const supabase = await createClient()
 
   const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, storiesResult] = await Promise.all([
-    supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
-    supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
-    supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8),
-    supabase.from("news_events").select("*").eq("published", true).order("event_date", { ascending: false }).limit(3),
-    supabase.from("volunteer_stories").select("*").eq("status", "approved").order("created_at", { ascending: false }),
+    supabase
+      .from("projects")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(6)
+      .then((result) => result)
+      .catch(() => ({ data: [] })),
+    supabase
+      .from("testimonials")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then((result) => result)
+      .catch(() => ({ data: [] })),
+    supabase
+      .from("gallery")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(8)
+      .then((result) => result)
+      .catch(() => ({ data: [] })),
+    supabase
+      .from("news_events")
+      .select("*")
+      .eq("published", true)
+      .order("event_date", { ascending: false })
+      .limit(3)
+      .then((result) => result)
+      .catch(() => ({ data: [] })),
+    supabase
+      .from("volunteer_stories")
+      .select("*")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .then((result) => result)
+      .catch(() => ({ data: [] })),
   ])
 
-  const projects = projectsResult.data || []
-  const testimonials = testimonialsResult.data || []
-  const gallery = galleryResult.data || []
-  const newsEvents = newsEventsResult.data || []
-  const volunteerStories = storiesResult.data || []
+  const projects = projectsResult?.data || []
+  const testimonials = testimonialsResult?.data || []
+  const gallery = galleryResult?.data || []
+  const newsEvents = newsEventsResult?.data || []
+  const volunteerStories = storiesResult?.data || []
 
   return (
     <div className="min-h-screen bg-gray-50">
