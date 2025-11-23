@@ -228,6 +228,43 @@ export default async function HomePage() {
               <p className="text-gray-700">By breaking barriers and providing opportunities for all</p>
             </div>
           </div>
+
+          {/* Youth-Focused Content Block - Strategic engagement point after stats */}
+          <div className="mt-16 bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 rounded-2xl p-12 text-white shadow-xl">
+            <h3 className="text-3xl md:text-4xl font-bold mb-6 text-balance">
+              Explore Youth-Focused Learning & Creative Platforms 🚀
+            </h3>
+            <p className="text-lg mb-8 leading-relaxed opacity-95">
+              Beyond mentorship and education, we've created dedicated spaces for youth to learn digital skills, share
+              their creativity, and grow as young leaders. Discover our Learning Hub for educational content and Youth
+              Creative Showcase for emerging artists and storytellers.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Link href="/learning-hub">
+                <div className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-md rounded-xl p-6 transition-all cursor-pointer border border-white border-opacity-30 hover:border-opacity-50">
+                  <div className="text-4xl mb-3">📚</div>
+                  <h4 className="text-2xl font-bold mb-2">Learning Hub</h4>
+                  <p className="opacity-90">
+                    Discover study tips, scholarship alerts, career guidance, and digital literacy lessons curated by
+                    experts.
+                  </p>
+                  <div className="mt-4 text-sm font-semibold flex items-center gap-2">Explore Now →</div>
+                </div>
+              </Link>
+              <Link href="/showcase">
+                <div className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-md rounded-xl p-6 transition-all cursor-pointer border border-white border-opacity-30 hover:border-opacity-50">
+                  <div className="text-4xl mb-3">🎨</div>
+                  <h4 className="text-2xl font-bold mb-2">Youth Creative Showcase</h4>
+                  <p className="opacity-90">
+                    Share your poems, art, spoken word, and stories. Get featured, build your portfolio, and inspire
+                    others.
+                  </p>
+                  <div className="mt-4 text-sm font-semibold flex items-center gap-2">Share Your Work →</div>
+                </div>
+              </Link>
+            </div>
+          </div>
+          {/* End of Youth-Focused Content Block */}
         </div>
       </section>
       {/* Our Story Section */}
@@ -401,19 +438,38 @@ export default async function HomePage() {
         </div>
       </section>
       {/* Testimonials Section - MOVED */}
-      <section id="testimonials" className="py-16 md:py-24 bg-gradient-to-b from-white to-gray-50 scroll-mt-20">
-        {" "}
-        {/* Updated background and scroll-mt */}
+      <section id="testimonials" className="py-16 md:py-24 bg-white scroll-mt-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4 text-balance">
-            What People Say
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4 text-balance fade-in-up">
+            What People Say 💬
           </h2>
-          <p className="text-center text-gray-700 max-w-2xl mx-auto mb-12 text-lg font-medium">
-            {" "}
-            {/* Updated text and font */}
-            Real stories from youth, volunteers, and community members transformed by our work.
+          <p className="text-center text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed text-lg fade-in-up">
+            Real stories from real people whose lives have been transformed through our mentorship, education, and
+            community support. These voices represent the thousands of youth we've empowered to chase their dreams and
+            become leaders.
           </p>
-          <TestimonialsCarousel testimonials={testimonials} /> {/* Replaced old testimonials rendering with Carousel */}
+          <TestimonialsCarousel testimonials={testimonials} />
+
+          <div className="mt-16 bg-gradient-to-r from-teal-600 to-blue-600 rounded-2xl p-12 text-white text-center shadow-xl">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">Inspired by These Stories? Make a Difference Today!</h3>
+            <p className="text-lg mb-8 max-w-2xl mx-auto opacity-95">
+              Every youth empowered is a future leader created. Join hundreds of volunteers, donors, and mentors who are
+              actively transforming lives right now.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="#volunteer">
+                <Button className="bg-white text-teal-600 hover:bg-gray-100 font-bold px-8 py-3 text-lg">
+                  Volunteer Now
+                </Button>
+              </a>
+              <a href="#donate">
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3 text-lg">
+                  Support Our Mission
+                </Button>
+              </a>
+            </div>
+          </div>
+          {/* End of Testimonials CTA */}
         </div>
       </section>
       {/* Meet the Team Section */}
@@ -990,6 +1046,19 @@ export default async function HomePage() {
         `,
         }}
       />
+      <div className="fixed right-4 bottom-24 z-40 flex flex-col gap-3">
+        <Link href="/learning-hub" title="Learning Hub">
+          <div className="floating-button bg-blue-600 hover:bg-blue-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition-all hover:scale-110 cursor-pointer">
+            <div className="text-2xl">📚</div>
+          </div>
+        </Link>
+        <Link href="/showcase" title="Youth Creative Showcase">
+          <div className="floating-button bg-purple-600 hover:bg-purple-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition-all hover:scale-110 cursor-pointer">
+            <div className="text-2xl">🎨</div>
+          </div>
+        </Link>
+      </div>
+      {/* End of Floating Buttons */}
     </div>
   )
 }
