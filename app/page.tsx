@@ -1142,5 +1142,13 @@ async function HomePage() {
     )
   }
 }
-
+<script dangerouslySetInnerHTML={{
+    __html: `
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    `,
+}} />
 export default HomePage
