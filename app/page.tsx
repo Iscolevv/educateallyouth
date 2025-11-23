@@ -241,25 +241,29 @@ export default async function HomePage() {
             </p>
             <div className="grid md:grid-cols-2 gap-6">
               <Link href="/learning-hub">
-                <div className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-md rounded-xl p-6 transition-all cursor-pointer border border-white border-opacity-30 hover:border-opacity-50">
-                  <div className="text-4xl mb-3">📚</div>
-                  <h4 className="text-3xl font-bold mb-2 text-white">Learning Hub</h4>
-                  <p className="opacity-90">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-2xl p-8 transition-all duration-300 cursor-pointer border-2 border-blue-200 hover:border-blue-400 shadow-lg hover:shadow-2xl hover:scale-105 transform">
+                  <div className="text-6xl mb-4 inline-block p-3 bg-blue-100 rounded-xl">📚</div>
+                  <h4 className="text-3xl font-bold mb-3 text-blue-900">Learning Hub</h4>
+                  <p className="text-gray-700 mb-4 font-medium leading-relaxed">
                     Discover study tips, scholarship alerts, career guidance, and digital literacy lessons curated by
                     experts.
                   </p>
-                  <div className="mt-4 text-sm font-semibold flex items-center gap-2">Explore Now →</div>
+                  <div className="mt-6 text-base font-semibold flex items-center gap-2 text-blue-600 hover:text-blue-700">
+                    <span className="bg-blue-200 px-4 py-2 rounded-lg text-blue-900">Explore Now →</span>
+                  </div>
                 </div>
               </Link>
               <Link href="/showcase">
-                <div className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-md rounded-xl p-6 transition-all cursor-pointer border border-white border-opacity-30 hover:border-opacity-50">
-                  <div className="text-4xl mb-3">🎨</div>
-                  <h4 className="text-3xl font-bold mb-2 text-white">Youth Creative Showcase</h4>
-                  <p className="opacity-90">
+                <div className="bg-gradient-to-br from-pink-50 to-purple-50 hover:from-pink-100 hover:to-purple-100 rounded-2xl p-8 transition-all duration-300 cursor-pointer border-2 border-pink-200 hover:border-pink-400 shadow-lg hover:shadow-2xl hover:scale-105 transform">
+                  <div className="text-6xl mb-4 inline-block p-3 bg-pink-100 rounded-xl">🎨</div>
+                  <h4 className="text-3xl font-bold mb-3 text-pink-900">Youth Creative Showcase</h4>
+                  <p className="text-gray-700 mb-4 font-medium leading-relaxed">
                     Share your poems, art, spoken word, and stories. Get featured, build your portfolio, and inspire
                     others.
                   </p>
-                  <div className="mt-4 text-sm font-semibold flex items-center gap-2">Share Your Work →</div>
+                  <div className="mt-6 text-base font-semibold flex items-center gap-2 text-pink-600 hover:text-pink-700">
+                    <span className="bg-pink-200 px-4 py-2 rounded-lg text-pink-900">Share Your Work →</span>
+                  </div>
                 </div>
               </Link>
             </div>
