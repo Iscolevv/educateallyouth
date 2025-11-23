@@ -243,7 +243,7 @@ export default async function HomePage() {
               <Link href="/learning-hub">
                 <div className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-md rounded-xl p-6 transition-all cursor-pointer border border-white border-opacity-30 hover:border-opacity-50">
                   <div className="text-4xl mb-3">📚</div>
-                  <h4 className="text-2xl font-bold mb-2">Learning Hub</h4>
+                  <h4 className="text-3xl font-bold mb-2 text-white">Learning Hub</h4>
                   <p className="opacity-90">
                     Discover study tips, scholarship alerts, career guidance, and digital literacy lessons curated by
                     experts.
@@ -254,7 +254,7 @@ export default async function HomePage() {
               <Link href="/showcase">
                 <div className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-md rounded-xl p-6 transition-all cursor-pointer border border-white border-opacity-30 hover:border-opacity-50">
                   <div className="text-4xl mb-3">🎨</div>
-                  <h4 className="text-2xl font-bold mb-2">Youth Creative Showcase</h4>
+                  <h4 className="text-3xl font-bold mb-2 text-white">Youth Creative Showcase</h4>
                   <p className="opacity-90">
                     Share your poems, art, spoken word, and stories. Get featured, build your portfolio, and inspire
                     others.
@@ -1047,16 +1047,26 @@ export default async function HomePage() {
         }}
       />
       <div className="fixed right-4 bottom-24 z-40 flex flex-col gap-3">
-        <Link href="/learning-hub" title="Learning Hub">
-          <div className="floating-button bg-blue-600 hover:bg-blue-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition-all hover:scale-110 cursor-pointer">
-            <div className="text-2xl">📚</div>
-          </div>
-        </Link>
-        <Link href="/showcase" title="Youth Creative Showcase">
-          <div className="floating-button bg-purple-600 hover:bg-purple-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition-all hover:scale-110 cursor-pointer">
-            <div className="text-2xl">🎨</div>
-          </div>
-        </Link>
+        <div className="group relative">
+          <Link href="/learning-hub">
+            <div className="floating-button bg-blue-600 hover:bg-blue-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition-all hover:scale-110 cursor-pointer">
+              <div className="text-2xl">📚</div>
+            </div>
+          </Link>
+          <span className="absolute right-20 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            Learning Hub
+          </span>
+        </div>
+        <div className="group relative">
+          <Link href="/showcase">
+            <div className="floating-button bg-purple-600 hover:bg-purple-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition-all hover:scale-110 cursor-pointer">
+              <div className="text-2xl">🎨</div>
+            </div>
+          </Link>
+          <span className="absolute right-20 top-1/2 transform -translate-y-1/2 bg-purple-600 text-white px-3 py-2 rounded-lg text-sm font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            Youth Showcase
+          </span>
+        </div>
       </div>
       {/* End of Floating Buttons */}
     </div>
