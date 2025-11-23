@@ -149,6 +149,21 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         <Analytics />
+        <body className="antialiased">
+
+    {/* PASTE THE FORCED REFRESH SCRIPT HERE */}
+    <script dangerouslySetInnerHTML={{
+      __html: `
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                // Forces a hard reload by making the URL look unique
+                window.location.href = window.location.href + '?cache_buster=' + new Date().getTime();
+            }
+        });
+      `,
+    }} />
+
+  </body>
       </body>
     </html>
   )
