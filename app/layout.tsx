@@ -128,6 +128,23 @@ export default function RootLayout({
             }),
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof window !== 'undefined') {
+                  window.addEventListener('pageshow', function(event) {
+                    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                      if (window.location.pathname === '/') {
+                        window.location.reload();
+                      }
+                    }
+                  });
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body className="antialiased">
         {children}
