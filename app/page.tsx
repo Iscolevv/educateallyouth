@@ -11,6 +11,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
 import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
 
+export const revalidate = 0 // Force no caching to prevent stale content
+export const dynamic = "force-dynamic" // Force dynamic rendering
+
 async function HomePageContent({
   projects,
   testimonials,
@@ -1071,47 +1074,66 @@ async function HomePageContent({
   )
 }
 
-export default async function HomePage() {
-  let supabase
-  try {
-    supabase = await createClient()
-  } catch (error) {
-    console.error("[v0] Failed to create Supabase client:", error)
-    // Return page with empty data instead of crashing
+async function HomePage() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+  const supabaseKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn("[v0] Missing Supabase environment variables - using empty data")
     return <HomePageContent projects={[]} testimonials={[]} gallery={[]} newsEvents={[]} volunteerStories={[]} />
   }
 
-  console.log("[v0] Fetching homepage data...")
+  const supabase = await createClient()
 
-  const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, storiesResult] = await Promise.all([
-    supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
-    supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
-    supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8),
-    supabase.from("news_events").select("*").eq("published", true).order("event_date", { ascending: false }).limit(3),
-    supabase.from("volunteer_stories").select("*").eq("status", "approved").order("created_at", { ascending: false }),
-  ])
+  try {
+    console.log("[v0] Fetching homepage data...")
+    const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, volunteerStoriesResult] =
+      await Promise.all([
+        supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
+        supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
+        supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8),
+        supabase
+          .from("news_events")
+          .select("*")
+          .eq("published", true)
+          .order("event_date", { ascending: false })
+          .limit(3),
+        supabase
+          .from("volunteer_stories")
+          .select("*")
+          .eq("status", "approved")
+          .order("created_at", { ascending: false })
+          .limit(3),
+      ])
 
-  const projects = projectsResult?.data || []
-  const testimonials = testimonialsResult?.data || []
-  const gallery = galleryResult?.data || []
-  const newsEvents = newsEventsResult?.data || []
-  const volunteerStories = storiesResult?.data || []
+    const projects = projectsResult.data || []
+    const testimonials = testimonialsResult.data || []
+    const gallery = galleryResult.data || []
+    const newsEvents = newsEventsResult.data || []
+    const volunteerStories = volunteerStoriesResult.data || []
 
-  console.log("[v0] Homepage data fetched:", {
-    projects: projects.length,
-    testimonials: testimonials.length,
-    gallery: gallery.length,
-    newsEvents: newsEvents.length,
-    volunteerStories: volunteerStories.length,
-  })
+    console.log("[v0] Homepage data fetched:", {
+      projects: projects.length,
+      testimonials: testimonials.length,
+      gallery: gallery.length,
+      newsEvents: newsEvents.length,
+      volunteerStories: volunteerStories.length,
+    })
 
-  return (
-    <HomePageContent
-      projects={projects}
-      testimonials={testimonials}
-      gallery={gallery}
-      newsEvents={newsEvents}
-      volunteerStories={volunteerStories}
-    />
-  )
+    return (
+      <HomePageContent
+        projects={projects}
+        testimonials={testimonials}
+        gallery={gallery}
+        newsEvents={newsEvents}
+        volunteerStories={volunteerStories}
+      />
+    )
+  } catch (error) {
+    console.error("[v0] Error fetching homepage data:", error)
+    return <HomePageContent projects={[]} testimonials={[]} gallery={[]} newsEvents={[]} volunteerStories={[]} />
+  }
 }
+
+export default HomePage
