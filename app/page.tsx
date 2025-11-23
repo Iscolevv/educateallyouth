@@ -1,3 +1,4 @@
+'use client';
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -1146,9 +1147,12 @@ async function HomePage() {
     __html: `
         window.addEventListener('pageshow', function (event) {
             if (event.persisted) {
-                window.location.reload();
+                // Set the location to the current URL with a fake cache-busting parameter
+                window.location.href = window.location.href + '?cache_buster=' + new Date().getTime();
+                // Alternatively, try window.location.reload(true); for a hard reload (less guaranteed in modern browsers)
             }
         });
     `,
 }} />
+
 export default HomePage
