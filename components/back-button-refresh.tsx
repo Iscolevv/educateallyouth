@@ -5,32 +5,18 @@ import { useEffect } from "react"
 export function BackButtonRefresh() {
   useEffect(() => {
     const handlePopState = () => {
+      // Only reload if we're navigating back to homepage
       if (window.location.pathname === "/") {
-        window.location.reload()
-      } else {
-        // Navigate to homepage with hard refresh
-        window.location.href = "/"
+        window.location.href = "/" + "?t=" + Date.now() // Force hard refresh with cache buster
       }
     }
 
-    // Listen for back button clicks
     window.addEventListener("popstate", handlePopState)
-
-    const handlePageShow = (event: Event) => {
-      // Type the event properly as PageShowEvent
-      const pageShowEvent = event as PageShowEvent
-      if (pageShowEvent.persisted && window.location.pathname === "/") {
-        window.location.reload()
-      }
-    }
-
-    window.addEventListener("pageshow", handlePageShow)
 
     return () => {
       window.removeEventListener("popstate", handlePopState)
-      window.removeEventListener("pageshow", handlePageShow)
     }
-  }, []) // Added empty dependency array to prevent useEffect from running on every render and causing errors
+  }, [])
 
   return null
 }
