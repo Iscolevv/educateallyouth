@@ -30,7 +30,7 @@ export function BackButtonRefresh() {
       window.removeEventListener("popstate", handlePopState)
       window.removeEventListener("pageshow", handlePageShow)
     }
-  }, [])
+  }, []) // Added empty dependency array to prevent useEffect from running on every render and causing errors
 
   return null
 }
