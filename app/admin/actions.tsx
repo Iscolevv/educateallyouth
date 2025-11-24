@@ -482,7 +482,8 @@ export async function updateCreativeSubmission(
     }
 
     console.log("[v0] Creative submission updated successfully:", result)
-    revalidatePath("/learning-hub")
+    revalidatePath("/showcase")
+    revalidatePath("/admin/dashboard")
     return result
   } catch (error) {
     console.error("[v0] Error in updateCreativeSubmission:", error)
@@ -495,25 +496,25 @@ export async function updateCreativeSubmissionFull(
   data: {
     title?: string
     content?: string
+    category?: string
     author_name?: string
     author_email?: string
     author_phone?: string
     author_bio?: string
     author_instagram?: string
-    category?: string
     image_url?: string | null
+    published?: boolean
   },
 ) {
   try {
     const supabase = createAdminClient()
-    console.log("[v0] Updating creative submission with full data:", id)
+    console.log("[v0] Updating creative submission full:", id, data)
 
-    const updateData: any = {
-      ...data,
-      updated_at: new Date().toISOString(),
-    }
-
-    const { data: result, error } = await supabase.from("creative_submissions").update(updateData).eq("id", id).select()
+    const { data: result, error } = await supabase
+      .from("creative_submissions")
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select()
 
     if (error) {
       console.error("[v0] Supabase error updating creative submission:", error)
@@ -531,16 +532,71 @@ export async function updateCreativeSubmissionFull(
 }
 
 export async function deleteCreativeSubmission(id: string) {
-  const supabase = createAdminClient()
-  const { error } = await supabase.from("creative_submissions").delete().eq("id", id)
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Deleting creative submission:", id)
 
-  if (error) {
-    console.error("[v0] Error deleting creative submission:", error)
-    throw new Error("Failed to delete creative submission")
+    const { error } = await supabase.from("creative_submissions").delete().eq("id", id)
+
+    if (error) {
+      console.error("[v0] Supabase error deleting creative submission:", error)
+      throw new Error(error.message || "Failed to delete creative submission")
+    }
+
+    console.log("[v0] Creative submission deleted successfully")
+    revalidatePath("/showcase")
+    revalidatePath("/admin/dashboard")
+    return { success: true }
+  } catch (error) {
+    console.error("[v0] Error in deleteCreativeSubmission:", error)
+    throw error
   }
+}
 
-  revalidatePath("/showcase")
-  revalidatePath("/admin/dashboard")
+export async function approveCreativeSubmission(id: string) {
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Approving creative submission:", id)
+
+    const { data: submission, error: fetchError } = await supabase
+      .from("creative_submissions")
+      .select("*")
+      .eq("id", id)
+      .single()
+
+    if (fetchError) {
+      console.error("[v0] Error fetching submission:", fetchError)
+      throw new Error("Failed to fetch submission details")
+    }
+
+    const { data: result, error } = await supabase
+      .from("creative_submissions")
+      .update({ published: true, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select()
+
+    if (error) {
+      console.error("[v0] Supabase error approving creative submission:", error)
+      throw new Error(error.message || "Failed to approve creative submission")
+    }
+
+    console.log("[v0] Creative submission approved successfully:", result)
+
+    if (submission?.author_email) {
+      try {
+        await sendApprovalEmail(submission.author_email, submission.author_name, submission.title, id)
+      } catch (emailError) {
+        console.error("[v0] Failed to send approval email:", emailError)
+      }
+    }
+
+    revalidatePath("/showcase")
+    revalidatePath("/admin/dashboard")
+    return result
+  } catch (error) {
+    console.error("[v0] Error in approveCreativeSubmission:", error)
+    throw error
+  }
 }
 
 async function sendApprovalEmail(
@@ -673,63 +729,5 @@ async function sendApprovalEmail(
     console.error("[v0] ========================================")
     // Don't throw - we don't want the approval to fail if email fails
     return false
-  }
-}
-
-export async function approveCreativeSubmission(id: string) {
-  try {
-    const supabase = createAdminClient()
-    console.log("[v0] ========== APPROVAL PROCESS STARTING ==========")
-    console.log("[v0] Approving creative submission ID:", id)
-
-    const { data: submission, error: fetchError } = await supabase
-      .from("creative_submissions")
-      .select("*")
-      .eq("id", id)
-      .single()
-
-    if (fetchError || !submission) {
-      console.error("[v0] ❌ Error fetching submission:", fetchError)
-      throw new Error("Submission not found")
-    }
-
-    console.log("[v0] ✓ Fetched submission details:")
-    console.log("[v0]   - Title:", submission.title)
-    console.log("[v0]   - Author:", submission.author_name)
-    console.log("[v0]   - Email:", submission.author_email)
-    console.log("[v0]   - Category:", submission.category)
-
-    const { data: result, error } = await supabase
-      .from("creative_submissions")
-      .update({ published: true, updated_at: new Date().toISOString() })
-      .eq("id", id)
-      .select()
-
-    if (error) {
-      console.error("[v0] ❌ Supabase error updating submission:", error)
-      throw new Error(error.message || "Failed to approve submission")
-    }
-
-    console.log("[v0] ✓ Submission marked as published in database")
-
-    console.log("[v0] Now sending approval email to author...")
-    const emailSent = await sendApprovalEmail(submission.author_email, submission.author_name, submission.title, id)
-
-    if (emailSent) {
-      console.log("[v0] ✓ Approval email sent successfully!")
-    } else {
-      console.warn("[v0] ⚠️  Email sending failed, but submission was approved")
-    }
-
-    console.log("[v0] Revalidating paths...")
-    revalidatePath("/showcase")
-    revalidatePath("/admin/dashboard")
-
-    console.log("[v0] ✅ APPROVAL PROCESS COMPLETE")
-    console.log("[v0] ==========================================")
-    return result
-  } catch (error) {
-    console.error("[v0] ❌ Error in approveCreativeSubmission:", error)
-    throw error
   }
 }
