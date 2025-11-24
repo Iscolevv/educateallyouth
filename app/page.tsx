@@ -1142,16 +1142,5 @@ async function HomePage() {
     )
   }
 }
-<script dangerouslySetInnerHTML={{
-    __html: `
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted) {
-                // Set the location to the current URL with a fake cache-busting parameter
-                window.location.href = window.location.href + '?cache_buster=' + new Date().getTime();
-                // Alternatively, try window.location.reload(true); for a hard reload (less guaranteed in modern browsers)
-            }
-        });
-    `,
-}} />
 
 export default HomePage
