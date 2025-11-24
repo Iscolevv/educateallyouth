@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
+import { BackButtonRefresh } from "@/components/back-button-refresh"
 
 export const metadata: Metadata = {
   title: "EducateAll Youth Organization | Empowering Youth Through Education in Kenya",
@@ -147,23 +148,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <BackButtonRefresh />
         {children}
         <Analytics />
-        <body className="antialiased">
-
-    {/* PASTE THE FORCED REFRESH SCRIPT HERE */}
-    <script dangerouslySetInnerHTML={{
-  __html: `
-    window.addEventListener('pageshow', function (event) {
-        if (event.persisted) {
-            // Simple command forcing a reload from the server
-            window.location.reload(true); 
-        }
-    });
-  `,
-    }} />
-
-  </body>
       </body>
     </html>
   )
