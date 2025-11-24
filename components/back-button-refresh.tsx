@@ -1,26 +1,37 @@
 "use client"
 
 import { useEffect } from "react"
+import type { PageShowEvent } from "next/dist/shared/lib/utils"
 
 export function BackButtonRefresh() {
   useEffect(() => {
     const handlePopState = () => {
-      // Only reload if we're navigating back to homepage
+      // Force a hard refresh when back button is pressed (works on all pages)
       if (window.location.pathname === "/") {
-        window.location.href = "/" + "?t=" + Date.now() // Force hard refresh with cache buster
+        window.location.reload()
+      } else {
+        // Navigate to homepage with hard refresh
+        window.location.href = "/"
       }
     }
 
+    // Listen for back button clicks
     window.addEventListener("popstate", handlePopState)
+
+    // Also listen for page visibility changes (detects browser back cache)
+    const handlePageShow = (event: PageShowEvent) => {
+      if (event.persisted && window.location.pathname === "/") {
+        window.location.reload()
+      }
+    }
+
+    window.addEventListener("pageshow", handlePageShow)
 
     return () => {
       window.removeEventListener("popstate", handlePopState)
+      window.removeEventListener("pageshow", handlePageShow)
     }
   }, [])
 
   return null
-}
-
-interface PageShowEvent extends Event {
-  persisted: boolean
 }

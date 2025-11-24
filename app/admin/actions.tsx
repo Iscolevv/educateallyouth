@@ -2,7 +2,6 @@
 
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
-import Resend from "resend"
 
 // Create admin client with service role key (bypasses RLS)
 function createAdminClient() {
@@ -388,10 +387,7 @@ export async function getLearningPosts() {
     const supabase = createAdminClient()
     console.log("[v0] Fetching all learning posts for admin")
 
-    const { data, error } = await supabase
-      .from("learning_posts")
-      .select("*")
-      .order("created_at", { ascending: false })
+    const { data, error } = await supabase.from("learning_posts").select("*").order("created_at", { ascending: false })
 
     if (error) {
       console.error("[v0] Supabase error fetching learning posts:", error)
@@ -494,6 +490,46 @@ export async function updateCreativeSubmission(
   }
 }
 
+export async function updateCreativeSubmissionFull(
+  id: string,
+  data: {
+    title?: string
+    content?: string
+    author_name?: string
+    author_email?: string
+    author_phone?: string
+    author_bio?: string
+    author_instagram?: string
+    category?: string
+    image_url?: string | null
+  },
+) {
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Updating creative submission with full data:", id)
+
+    const updateData: any = {
+      ...data,
+      updated_at: new Date().toISOString(),
+    }
+
+    const { data: result, error } = await supabase.from("creative_submissions").update(updateData).eq("id", id).select()
+
+    if (error) {
+      console.error("[v0] Supabase error updating creative submission:", error)
+      throw new Error(error.message || "Failed to update creative submission")
+    }
+
+    console.log("[v0] Creative submission updated successfully:", result)
+    revalidatePath("/showcase")
+    revalidatePath("/admin/dashboard")
+    return result
+  } catch (error) {
+    console.error("[v0] Error in updateCreativeSubmissionFull:", error)
+    throw error
+  }
+}
+
 export async function deleteCreativeSubmission(id: string) {
   const supabase = createAdminClient()
   const { error } = await supabase.from("creative_submissions").delete().eq("id", id)
@@ -519,10 +555,13 @@ async function sendApprovalEmail(
     console.log("[v0] Author:", authorName)
     console.log("[v0] Title:", submissionTitle)
     console.log("[v0] Submission ID:", submissionId)
-    
+
     const apiKey = process.env.RESEND_API_KEY
-    console.log("[v0] RESEND_API_KEY status:", apiKey ? `✓ Present (${apiKey.substring(0, 10)}...)` : "✗ MISSING - EMAIL WILL FAIL!")
-    
+    console.log(
+      "[v0] RESEND_API_KEY status:",
+      apiKey ? `✓ Present (${apiKey.substring(0, 10)}...)` : "✗ MISSING - EMAIL WILL FAIL!",
+    )
+
     if (!apiKey) {
       console.error("[v0] ❌ CRITICAL: RESEND_API_KEY environment variable is not set!")
       throw new Error("RESEND_API_KEY not configured. Please add it to your Vercel environment variables.")
@@ -674,12 +713,7 @@ export async function approveCreativeSubmission(id: string) {
     console.log("[v0] ✓ Submission marked as published in database")
 
     console.log("[v0] Now sending approval email to author...")
-    const emailSent = await sendApprovalEmail(
-      submission.author_email,
-      submission.author_name,
-      submission.title,
-      id,
-    )
+    const emailSent = await sendApprovalEmail(submission.author_email, submission.author_name, submission.title, id)
 
     if (emailSent) {
       console.log("[v0] ✓ Approval email sent successfully!")
@@ -690,7 +724,7 @@ export async function approveCreativeSubmission(id: string) {
     console.log("[v0] Revalidating paths...")
     revalidatePath("/showcase")
     revalidatePath("/admin/dashboard")
-    
+
     console.log("[v0] ✅ APPROVAL PROCESS COMPLETE")
     console.log("[v0] ==========================================")
     return result

@@ -1,18 +1,28 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getCreativeSubmissions, updateCreativeSubmission, deleteCreativeSubmission } from "@/app/admin/actions"
+import { Card } from "@/components/ui/card"
+import {
+  getCreativeSubmissions,
+  deleteCreativeSubmission,
+  updateCreativeSubmissionFull,
+  approveCreativeSubmission,
+} from "@/app/admin/actions"
+import { X, Edit2, Save } from "lucide-react"
 
 export default function CreativeSubmissionsManager() {
   const [submissions, setSubmissions] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [error, setError] = useState<string | null>(null)
-  const [selectedSubmission, setSelectedSubmission] = useState<any>(null)
-  const [isEditingImage, setIsEditingImage] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [viewingId, setViewingId] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState<any>({})
 
   useEffect(() => {
     fetchSubmissions()
@@ -32,9 +42,65 @@ export default function CreativeSubmissionsManager() {
     }
   }
 
+  const startEditing = (submission: any) => {
+    setEditingId(submission.id)
+    setEditForm({
+      title: submission.title,
+      content: submission.content,
+      category: submission.category,
+      author_name: submission.author_name,
+      author_email: submission.author_email,
+      author_phone: submission.author_phone || "",
+      author_bio: submission.author_bio || "",
+      author_instagram: submission.author_instagram || "",
+      image_url: submission.image_url || "",
+    })
+  }
+
+  const handleSaveEdit = async (id: string) => {
+    try {
+      await updateCreativeSubmissionFull(id, editForm)
+      setEditingId(null)
+      await fetchSubmissions()
+      alert("Submission updated successfully!")
+    } catch (error) {
+      alert("Error updating submission")
+    }
+  }
+
+  const handleRemoveImage = async (id: string) => {
+    if (confirm("Remove image from this submission?")) {
+      try {
+        await updateCreativeSubmissionFull(id, { image_url: null })
+        await fetchSubmissions()
+        alert("Image removed successfully!")
+      } catch (error) {
+        alert("Error removing image")
+      }
+    }
+  }
+
+  const handleReplaceImage = async (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        const imageBase64 = event.target?.result as string
+        await updateCreativeSubmissionFull(id, { image_url: imageBase64 })
+        await fetchSubmissions()
+        alert("Image replaced successfully!")
+      }
+      reader.readAsDataURL(file)
+    } catch (error) {
+      alert("Error replacing image")
+    }
+  }
+
   const handleApprove = async (id: string) => {
     try {
-      await updateCreativeSubmission(id, { published: true })
+      await approveCreativeSubmission(id)
       await fetchSubmissions()
       alert("Submission approved and published!")
     } catch (error) {
@@ -42,39 +108,15 @@ export default function CreativeSubmissionsManager() {
     }
   }
 
-  const handleReject = async (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this submission?")) {
       try {
         await deleteCreativeSubmission(id)
         setSubmissions(submissions.filter((s) => s.id !== id))
-        setSelectedSubmission(null)
         alert("Submission deleted!")
       } catch (error) {
         alert("Error deleting submission")
       }
-    }
-  }
-
-  const handleRemoveImage = async (id: string) => {
-    try {
-      await updateCreativeSubmission(id, { image_url: null })
-      setSubmissions(submissions.map((s) => (s.id === id ? { ...s, image_url: null } : s)))
-      setSelectedSubmission((prev) => (prev && prev.id === id ? { ...prev, image_url: null } : prev))
-      alert("Image removed successfully!")
-    } catch (error) {
-      alert("Error removing image")
-    }
-  }
-
-  const handleUpdateImage = async (id: string, newImageUrl: string) => {
-    try {
-      await updateCreativeSubmission(id, { image_url: newImageUrl })
-      setSubmissions(submissions.map((s) => (s.id === id ? { ...s, image_url: newImageUrl } : s)))
-      setSelectedSubmission((prev) => (prev && prev.id === id ? { ...prev, image_url: newImageUrl } : prev))
-      setIsEditingImage(false)
-      alert("Image updated successfully!")
-    } catch (error) {
-      alert("Error updating image")
     }
   }
 
@@ -92,9 +134,187 @@ export default function CreativeSubmissionsManager() {
       s.author_name.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
+  const SubmissionCard = ({ submission, isPending }: any) => {
+    const isEditing = editingId === submission.id
+    const isViewing = viewingId === submission.id
+
+    if (isEditing) {
+      return (
+        <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Title</label>
+              <Input value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Content</label>
+              <textarea
+                className="w-full border rounded p-2 text-sm"
+                rows={4}
+                value={editForm.content}
+                onChange={(e) => setEditForm({ ...editForm, content: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select
+                  className="w-full border rounded p-2 text-sm"
+                  value={editForm.category}
+                  onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                >
+                  <option value="Poems">Poems</option>
+                  <option value="Art">Art</option>
+                  <option value="Spoken Art">Spoken Art</option>
+                  <option value="Short Stories">Short Stories</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Author Name</label>
+                <Input
+                  value={editForm.author_name}
+                  onChange={(e) => setEditForm({ ...editForm, author_name: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium mb-1">Email</label>
+                <Input
+                  value={editForm.author_email}
+                  onChange={(e) => setEditForm({ ...editForm, author_email: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Instagram</label>
+                <Input
+                  value={editForm.author_instagram}
+                  placeholder="@username"
+                  onChange={(e) => setEditForm({ ...editForm, author_instagram: e.target.value })}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Bio</label>
+              <textarea
+                className="w-full border rounded p-2 text-sm"
+                rows={2}
+                value={editForm.author_bio}
+                onChange={(e) => setEditForm({ ...editForm, author_bio: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Image</label>
+              {editForm.image_url && (
+                <div className="mb-3 relative">
+                  {editForm.image_url.startsWith("data:") ? (
+                    <img
+                      src={editForm.image_url || "/placeholder.svg"}
+                      alt="preview"
+                      className="w-full h-40 object-cover rounded"
+                    />
+                  ) : (
+                    <div className="w-full h-40 bg-gray-200 rounded flex items-center justify-center">
+                      <span className="text-gray-500">Image stored</span>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => handleRemoveImage(submission.id)}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+              <label className="block cursor-pointer bg-indigo-100 hover:bg-indigo-200 border-2 border-dashed border-indigo-300 rounded p-3 text-center text-sm font-medium text-indigo-700">
+                <span>Click to replace image</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleReplaceImage(submission.id, e)}
+                />
+              </label>
+            </div>
+            <div className="flex gap-2 justify-end pt-3 border-t">
+              <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                className="bg-green-600 hover:bg-green-700"
+                onClick={() => handleSaveEdit(submission.id)}
+              >
+                <Save size={16} className="mr-1" />
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )
+    }
+
+    return (
+      <Card className="p-4 border hover:shadow-md transition">
+        <div className="space-y-3">
+          <div className="flex justify-between items-start">
+            <div className="flex-1">
+              <h4 className="font-bold text-base text-gray-900">{submission.title}</h4>
+              <p className="text-xs text-gray-600 mt-1">
+                By: <span className="font-semibold">{submission.author_name}</span>
+              </p>
+              <div className="flex gap-2 mt-2">
+                <span className="inline-block bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs font-medium">
+                  {submission.category}
+                </span>
+                {submission.published && (
+                  <span className="inline-block bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">
+                    Published
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-gray-700 mt-2 line-clamp-2">{submission.content}</p>
+              {submission.author_instagram && (
+                <p className="text-xs text-gray-600 mt-1">{submission.author_instagram}</p>
+              )}
+            </div>
+            {submission.image_url && (
+              <div className="w-16 h-16 ml-3 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center text-xs text-gray-500">
+                Image
+              </div>
+            )}
+          </div>
+          <div className="flex gap-2 pt-2 border-t flex-wrap">
+            <Button size="sm" variant="outline" onClick={() => startEditing(submission)}>
+              <Edit2 size={14} className="mr-1" />
+              Edit
+            </Button>
+            {isPending && (
+              <Button
+                size="sm"
+                className="bg-green-600 hover:bg-green-700"
+                onClick={() => handleApprove(submission.id)}
+              >
+                Approve
+              </Button>
+            )}
+            <Button size="sm" variant="destructive" onClick={() => handleDelete(submission.id)}>
+              Delete
+            </Button>
+          </div>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Creative Submissions</h3>
+      <div>
+        <h3 className="text-lg font-semibold">Creative Submissions Management</h3>
+        <p className="text-sm text-gray-600">
+          Full control over all submissions - edit, approve, delete, and manage images
+        </p>
+      </div>
 
       {error && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -106,6 +326,7 @@ export default function CreativeSubmissionsManager() {
         placeholder="Search by title or author name..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
+        className="max-w-sm"
       />
 
       <Tabs defaultValue="pending" className="w-full">
@@ -114,168 +335,30 @@ export default function CreativeSubmissionsManager() {
           <TabsTrigger value="published">Published ({publishedSubmissions.length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pending" className="space-y-3">
+        <TabsContent value="pending" className="space-y-3 mt-4">
           {isLoading ? (
             <p className="text-gray-500">Loading...</p>
           ) : filteredPending.length === 0 ? (
             <p className="text-gray-500">No pending submissions</p>
           ) : (
             filteredPending.map((submission) => (
-              <div key={submission.id} className="border rounded-lg p-4 bg-white">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1 cursor-pointer" onClick={() => setSelectedSubmission(submission)}>
-                    <h4 className="font-semibold text-lg">{submission.title}</h4>
-                    <p className="text-sm text-gray-600">By: {submission.author_name}</p>
-                    <p className="text-sm text-teal-600 font-semibold">{submission.category}</p>
-                    <p className="text-sm text-gray-700 mt-2 line-clamp-2">{submission.content}</p>
-                    {submission.author_instagram && (
-                      <p className="text-sm text-gray-600 mt-1">{submission.author_instagram}</p>
-                    )}
-                    {submission.image_url && (
-                      <div className="mt-2 w-32 h-32 bg-gray-200 rounded overflow-hidden">
-                        <img
-                          src={submission.image_url || "/placeholder.svg"}
-                          alt={submission.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex gap-2 ml-4">
-                    <Button
-                      size="sm"
-                      onClick={() => handleApprove(submission.id)}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      Approve
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleReject(submission.id)}>
-                      Reject
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <SubmissionCard key={submission.id} submission={submission} isPending={true} />
             ))
           )}
         </TabsContent>
 
-        <TabsContent value="published" className="space-y-3">
+        <TabsContent value="published" className="space-y-3 mt-4">
           {isLoading ? (
             <p className="text-gray-500">Loading...</p>
           ) : filteredPublished.length === 0 ? (
             <p className="text-gray-500">No published submissions</p>
           ) : (
             filteredPublished.map((submission) => (
-              <div key={submission.id} className="border rounded-lg p-4 bg-white">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1 cursor-pointer" onClick={() => setSelectedSubmission(submission)}>
-                    <h4 className="font-semibold text-lg">{submission.title}</h4>
-                    <p className="text-sm text-gray-600">By: {submission.author_name}</p>
-                    <p className="text-sm text-teal-600 font-semibold">{submission.category}</p>
-                    {submission.image_url && (
-                      <div className="mt-2 w-32 h-32 bg-gray-200 rounded overflow-hidden">
-                        <img
-                          src={submission.image_url || "/placeholder.svg"}
-                          alt={submission.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <Button size="sm" variant="destructive" onClick={() => handleReject(submission.id)}>
-                    Delete
-                  </Button>
-                </div>
-              </div>
+              <SubmissionCard key={submission.id} submission={submission} isPending={false} />
             ))
           )}
         </TabsContent>
       </Tabs>
-
-      {selectedSubmission && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-96 overflow-y-auto p-6">
-            <h3 className="text-2xl font-bold mb-4">{selectedSubmission.title}</h3>
-
-            <div className="space-y-3 mb-6">
-              <p>
-                <strong>Author:</strong> {selectedSubmission.author_name}
-              </p>
-              <p>
-                <strong>Category:</strong> {selectedSubmission.category}
-              </p>
-              {selectedSubmission.author_instagram && (
-                <p>
-                  <strong>Instagram:</strong> {selectedSubmission.author_instagram}
-                </p>
-              )}
-              <p>
-                <strong>Bio:</strong> {selectedSubmission.author_bio}
-              </p>
-              <p>
-                <strong>Content:</strong> {selectedSubmission.content}
-              </p>
-            </div>
-
-            <div className="mb-6">
-              <h4 className="font-semibold mb-2">Image</h4>
-              {selectedSubmission.image_url ? (
-                <div className="space-y-3">
-                  <img
-                    src={selectedSubmission.image_url || "/placeholder.svg"}
-                    alt={selectedSubmission.title}
-                    className="w-full h-auto rounded-lg"
-                  />
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => setIsEditingImage(!isEditingImage)}>
-                      {isEditingImage ? "Cancel Edit" : "Edit Image"}
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleRemoveImage(selectedSubmission.id)}>
-                      Remove Image
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-gray-500">No image attached</p>
-              )}
-
-              {isEditingImage && (
-                <div className="mt-4 p-4 border rounded-lg bg-gray-50">
-                  <Input
-                    type="text"
-                    placeholder="Paste new image URL"
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        handleUpdateImage(selectedSubmission.id, (e.target as HTMLInputElement).value)
-                      }
-                    }}
-                    className="mb-2"
-                  />
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      const input = document.querySelector(
-                        'input[placeholder="Paste new image URL"]',
-                      ) as HTMLInputElement
-                      if (input?.value) {
-                        handleUpdateImage(selectedSubmission.id, input.value)
-                      }
-                    }}
-                  >
-                    Update Image
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setSelectedSubmission(null)}>
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
