@@ -18,6 +18,18 @@ export default function ProjectForm({ project }: { project?: any }) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const imageBase64 = event.target?.result as string
+      setImageUrl(imageBase64)
+    }
+    reader.readAsDataURL(file)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -84,13 +96,30 @@ export default function ProjectForm({ project }: { project?: any }) {
       </div>
 
       <div>
-        <Label htmlFor="imageUrl">Image URL</Label>
-        <Input
-          id="imageUrl"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="https://example.com/image.jpg"
-        />
+        <Label htmlFor="imageUrl">Project Image</Label>
+        {imageUrl && (
+          <div className="mb-3">
+            {imageUrl.startsWith("data:") ? (
+              <img src={imageUrl || "/placeholder.svg"} alt="preview" className="w-full h-40 object-cover rounded" />
+            ) : (
+              <img src={imageUrl || "/placeholder.svg"} alt="preview" className="w-full h-40 object-cover rounded" />
+            )}
+          </div>
+        )}
+        <div className="space-y-2">
+          <Input
+            id="imageUrl"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="https://example.com/image.jpg"
+          />
+          <div className="text-center">
+            <label className="cursor-pointer bg-indigo-100 hover:bg-indigo-200 border-2 border-dashed border-indigo-300 rounded p-3 text-center text-sm font-medium text-indigo-700 inline-block w-full">
+              <span>Or click to upload image from device</span>
+              <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+            </label>
+          </div>
+        </div>
       </div>
 
       <div>

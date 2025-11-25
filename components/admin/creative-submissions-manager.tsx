@@ -13,7 +13,7 @@ import {
   updateCreativeSubmissionFull,
   approveCreativeSubmission,
 } from "@/app/admin/actions"
-import { X, Edit2, Save } from "lucide-react"
+import { Edit2, Save } from "lucide-react"
 
 export default function CreativeSubmissionsManager() {
   const [submissions, setSubmissions] = useState<any[]>([])
@@ -71,10 +71,13 @@ export default function CreativeSubmissionsManager() {
   const handleRemoveImage = async (id: string) => {
     if (confirm("Remove image from this submission?")) {
       try {
+        console.log("[v0] Removing image for submission:", id)
         await updateCreativeSubmissionFull(id, { image_url: null })
-        await fetchSubmissions()
+        setSubmissions(submissions.map((s) => (s.id === id ? { ...s, image_url: null } : s)))
+        setEditForm({ ...editForm, image_url: null })
         alert("Image removed successfully!")
       } catch (error) {
+        console.error("[v0] Error removing image:", error)
         alert("Error removing image")
       }
     }
@@ -85,15 +88,19 @@ export default function CreativeSubmissionsManager() {
     if (!file) return
 
     try {
+      console.log("[v0] Replacing image for submission:", id)
       const reader = new FileReader()
       reader.onload = async (event) => {
         const imageBase64 = event.target?.result as string
+        console.log("[v0] Image converted to base64, updating...")
         await updateCreativeSubmissionFull(id, { image_url: imageBase64 })
-        await fetchSubmissions()
+        setSubmissions(submissions.map((s) => (s.id === id ? { ...s, image_url: imageBase64 } : s)))
+        setEditForm({ ...editForm, image_url: imageBase64 })
         alert("Image replaced successfully!")
       }
       reader.readAsDataURL(file)
     } catch (error) {
+      console.error("[v0] Error replacing image:", error)
       alert("Error replacing image")
     }
   }
@@ -204,28 +211,6 @@ export default function CreativeSubmissionsManager() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Image</label>
-              {editForm.image_url && (
-                <div className="mb-3 relative">
-                  {editForm.image_url.startsWith("data:") ? (
-                    <img
-                      src={editForm.image_url || "/placeholder.svg"}
-                      alt="preview"
-                      className="w-full h-40 object-cover rounded"
-                    />
-                  ) : (
-                    <div className="w-full h-40 bg-gray-200 rounded flex items-center justify-center">
-                      <span className="text-gray-500">Image stored</span>
-                    </div>
-                  )}
-                  <button
-                    onClick={() => handleRemoveImage(submission.id)}
-                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              )}
               <label className="block cursor-pointer bg-indigo-100 hover:bg-indigo-200 border-2 border-dashed border-indigo-300 rounded p-3 text-center text-sm font-medium text-indigo-700">
                 <span>Click to replace image</span>
                 <input
