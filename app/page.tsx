@@ -1,5 +1,3 @@
-"use client"
-
 // REMOVED: "use client" directive and useState import as HomePageContent is now a Server Component
 // import { useState } from "react"
 
