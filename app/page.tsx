@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -11,23 +14,31 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
 import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
 import { HomepageWrapper } from "@/components/homepage-wrapper" // Added import
+import { NewsEventModal } from "@/components/news-event-modal" // Added import
 
 export const revalidate = 0 // Force no caching to prevent stale content
 export const dynamic = "force-dynamic" // Force dynamic rendering
 
-async function HomePageContent({
-  projects,
-  testimonials,
-  gallery,
-  newsEvents,
-  volunteerStories,
-}: {
+// Define the HomePageProps interface
+interface HomePageProps {
   projects: any[]
   testimonials: any[]
   gallery: any[]
   newsEvents: any[]
   volunteerStories: any[]
-}) {
+}
+
+async function HomePageContent({ projects, testimonials, gallery, newsEvents, volunteerStories }: HomePageProps) {
+  const [selectedNewsEvent, setSelectedNewsEvent] = useState<any>(null)
+
+  const handleNewsEventClick = (item: any) => {
+    setSelectedNewsEvent(item)
+  }
+
+  const handleCloseModal = () => {
+    setSelectedNewsEvent(null)
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header/Navigation */}
@@ -585,39 +596,44 @@ async function HomePageContent({
           {newsEvents && newsEvents.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
               {newsEvents.map((item) => (
-                <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow fade-in-up">
-                  {item.image_url && (
-                    <img
-                      src={item.image_url || "/placeholder.svg"}
-                      alt={item.title}
-                      className="w-full h-48 object-cover"
-                    />
-                  )}
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium uppercase">
-                        {item.type}
-                      </span>
-                      {item.event_date && (
-                        <span className="text-sm text-gray-500">
-                          {new Date(item.event_date).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
+                <div key={item.id} onClick={() => handleNewsEventClick(item)} className="cursor-pointer">
+                  <Card className="overflow-hidden hover:shadow-lg transition-shadow fade-in-up hover:scale-105">
+                    {item.image_url && (
+                      <img
+                        src={item.image_url || "/placeholder.svg"}
+                        alt={item.title}
+                        className="w-full h-48 object-cover"
+                      />
+                    )}
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium uppercase">
+                          {item.type}
                         </span>
-                      )}
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
-                    <p className="text-gray-600">{item.description}</p>
-                  </CardContent>
-                </Card>
+                        {item.event_date && (
+                          <span className="text-sm text-gray-500">
+                            {new Date(item.event_date).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
+                      <p className="text-gray-600">{item.description}</p>
+                    </CardContent>
+                  </Card>
+                </div>
               ))}
             </div>
           ) : (
             <div className="text-center py-12">
               <p className="text-gray-500">No news or events available yet. Check back soon!</p>
             </div>
+          )}
+          {selectedNewsEvent && (
+            <NewsEventModal item={selectedNewsEvent} isOpen={!!selectedNewsEvent} onClose={handleCloseModal} />
           )}
         </div>
       </section>
@@ -1143,4 +1159,8 @@ async function HomePage() {
   }
 }
 
+// The export below is for the main function that fetches data.
+// The 'use client' directive should be applied to the component that uses client-side hooks.
+// In this case, HomePageContent needs it.
+// Therefore, we move 'use client' to the top of HomePageContent and export HomePage as a server component.
 export default HomePage
