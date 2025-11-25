@@ -129,33 +129,6 @@ export default function RootLayout({
             }),
           }}
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                if (typeof window !== 'undefined') {
-                  // Method 1: Page visibility API (detects back from other pages)
-                  window.addEventListener('pageshow', function(event) {
-                    if (event.persisted) {
-                      window.location.reload();
-                    }
-                  });
-
-                  // Method 2: Unload and reload on navigation (mobile fallback)
-                  window.addEventListener('beforeunload', function() {
-                    sessionStorage.setItem('pageReload', 'true');
-                  });
-
-                  // Method 3: Check if returning from another page
-                  if (sessionStorage.getItem('pageReload') === 'true') {
-                    sessionStorage.removeItem('pageReload');
-                    window.location.reload();
-                  }
-                }
-              })();
-            `,
-          }}
-        />
       </head>
       <body className="antialiased">
         <BackButtonRefresh />
