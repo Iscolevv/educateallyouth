@@ -30,5 +30,13 @@ export async function createClient() {
         }
       },
     },
+    db: {
+      schema: "public",
+    },
+    global: {
+      headers: {
+        "cache-control": "no-cache, no-store, must-revalidate",
+      },
+    },
   })
 }

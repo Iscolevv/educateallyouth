@@ -12,9 +12,11 @@ import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is
 import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
 import { HomepageWrapper } from "@/components/homepage-wrapper" // Added import
 import { NewsEventsSection } from "@/components/news-events-section" // Import the new client-side NewsEventsSection component instead of rendering inline
+import { unstable_noStore as noStore } from "next/cache"
 
-export const revalidate = 0 // Force no caching to prevent stale content
-export const dynamic = "force-dynamic" // Force dynamic rendering
+export const revalidate = 0
+export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"
 
 async function HomePageContent({
   projects,
@@ -1030,6 +1032,8 @@ async function HomePageContent({
 }
 
 async function HomePage() {
+  noStore()
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
@@ -1043,23 +1047,32 @@ async function HomePage() {
 
   try {
     console.log("[v0] Fetching homepage data...")
+    const fetchWithTimeout = async (promise: Promise<any>, timeout = 5000) => {
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Query timeout")), timeout))
+      return Promise.race([promise, timeoutPromise])
+    }
+
     const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, volunteerStoriesResult] =
       await Promise.all([
-        supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
-        supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
-        supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8),
-        supabase
-          .from("news_events")
-          .select("*")
-          .eq("published", true)
-          .order("event_date", { ascending: false })
-          .limit(3),
-        supabase
-          .from("volunteer_stories")
-          .select("*")
-          .eq("status", "approved")
-          .order("created_at", { ascending: false })
-          .limit(3),
+        fetchWithTimeout(supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6)),
+        fetchWithTimeout(supabase.from("testimonials").select("*").order("created_at", { ascending: false })),
+        fetchWithTimeout(supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8)),
+        fetchWithTimeout(
+          supabase
+            .from("news_events")
+            .select("*")
+            .eq("published", true)
+            .order("event_date", { ascending: false })
+            .limit(3),
+        ),
+        fetchWithTimeout(
+          supabase
+            .from("volunteer_stories")
+            .select("*")
+            .eq("status", "approved")
+            .order("created_at", { ascending: false })
+            .limit(3),
+        ),
       ])
 
     const projects = projectsResult.data || []
