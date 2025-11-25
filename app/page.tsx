@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+// REMOVED: "use client" directive and useState import as HomePageContent is now a Server Component
+// import { useState } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,8 +15,7 @@ import { Linkedin, Mail, Instagram, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
 import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
-import { HomepageWrapper } from "@/components/homepage-wrapper" // Added import
-import { NewsEventModal } from "@/components/news-event-modal" // Added import
+import { HomePageClient } from "@/components/homepage-client" // Added import
 
 export const revalidate = 0 // Force no caching to prevent stale content
 export const dynamic = "force-dynamic" // Force dynamic rendering
@@ -28,17 +29,18 @@ interface HomePageProps {
   volunteerStories: any[]
 }
 
+// REMOVED: useState hook and modal state management from HomePageContent
+// const [selectedNewsEvent, setSelectedNewsEvent] = useState<any>(null)
+
+// const handleNewsEventClick = (item: any) => {
+//   setSelectedNewsEvent(item)
+// }
+
+// const handleCloseModal = () => {
+//   setSelectedNewsEvent(null)
+// }
+
 async function HomePageContent({ projects, testimonials, gallery, newsEvents, volunteerStories }: HomePageProps) {
-  const [selectedNewsEvent, setSelectedNewsEvent] = useState<any>(null)
-
-  const handleNewsEventClick = (item: any) => {
-    setSelectedNewsEvent(item)
-  }
-
-  const handleCloseModal = () => {
-    setSelectedNewsEvent(null)
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header/Navigation */}
@@ -596,7 +598,7 @@ async function HomePageContent({ projects, testimonials, gallery, newsEvents, vo
           {newsEvents && newsEvents.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
               {newsEvents.map((item) => (
-                <div key={item.id} onClick={() => handleNewsEventClick(item)} className="cursor-pointer">
+                <div key={item.id} /* onClick={() => handleNewsEventClick(item)} */ className="cursor-pointer">
                   <Card className="overflow-hidden hover:shadow-lg transition-shadow fade-in-up hover:scale-105">
                     {item.image_url && (
                       <img
@@ -632,9 +634,7 @@ async function HomePageContent({ projects, testimonials, gallery, newsEvents, vo
               <p className="text-gray-500">No news or events available yet. Check back soon!</p>
             </div>
           )}
-          {selectedNewsEvent && (
-            <NewsEventModal item={selectedNewsEvent} isOpen={!!selectedNewsEvent} onClose={handleCloseModal} />
-          )}
+          {/* Removed NewsEventModal usage here as state management is moved to HomePageClient */}
         </div>
       </section>
       {/* Volunteer Section */}
@@ -1098,65 +1098,50 @@ async function HomePage() {
 
   if (!supabaseUrl || !supabaseKey) {
     console.warn("[v0] Missing Supabase environment variables - using empty data")
-    return <HomePageContent projects={[]} testimonials={[]} gallery={[]} newsEvents={[]} volunteerStories={[]} />
+    return (
+      <HomePageClient>
+        <HomePageContent projects={[]} testimonials={[]} gallery={[]} newsEvents={[]} volunteerStories={[]} />
+      </HomePageClient>
+    )
   }
 
   const supabase = await createClient()
 
+  let projects: any[] = []
+  let testimonials: any[] = []
+  let gallery: any[] = []
+  let newsEvents: any[] = []
+  let volunteerStories: any[] = []
+
   try {
-    console.log("[v0] Fetching homepage data...")
-    const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, volunteerStoriesResult] =
-      await Promise.all([
-        supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
-        supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
-        supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8),
-        supabase
-          .from("news_events")
-          .select("*")
-          .eq("published", true)
-          .order("event_date", { ascending: false })
-          .limit(3),
-        supabase
-          .from("volunteer_stories")
-          .select("*")
-          .eq("status", "approved")
-          .order("created_at", { ascending: false })
-          .limit(3),
-      ])
+    const [projectsData, testimonialData, galleryData, newsEventsData, volunteerData] = await Promise.all([
+      supabase.from("projects").select().order("created_at", { ascending: false }).limit(100),
+      supabase.from("testimonials").select().order("created_at", { ascending: false }).limit(100),
+      supabase.from("gallery").select().order("created_at", { ascending: false }).limit(100),
+      supabase.from("news_events").select().order("created_at", { ascending: false }).limit(100),
+      supabase.from("volunteer_stories").select().order("created_at", { ascending: false }).limit(100),
+    ])
 
-    const projects = projectsResult.data || []
-    const testimonials = testimonialsResult.data || []
-    const gallery = galleryResult.data || []
-    const newsEvents = newsEventsResult.data || []
-    const volunteerStories = volunteerStoriesResult.data || []
-
-    console.log("[v0] Homepage data fetched:", {
-      projects: projects.length,
-      testimonials: testimonials.length,
-      gallery: gallery.length,
-      newsEvents: newsEvents.length,
-      volunteerStories: volunteerStories.length,
-    })
-
-    return (
-      <HomepageWrapper>
-        <HomePageContent
-          projects={projects}
-          testimonials={testimonials}
-          gallery={gallery}
-          newsEvents={newsEvents}
-          volunteerStories={volunteerStories}
-        />
-      </HomepageWrapper>
-    )
+    projects = projectsData?.data || []
+    testimonials = testimonialData?.data || []
+    gallery = galleryData?.data || []
+    newsEvents = newsEventsData?.data || []
+    volunteerStories = volunteerData?.data || []
   } catch (error) {
     console.error("[v0] Error fetching homepage data:", error)
-    return (
-      <HomepageWrapper>
-        <HomePageContent projects={[]} testimonials={[]} gallery={[]} newsEvents={[]} volunteerStories={[]} />
-      </HomepageWrapper>
-    )
   }
+
+  return (
+    <HomePageClient>
+      <HomePageContent
+        projects={projects}
+        testimonials={testimonials}
+        gallery={gallery}
+        newsEvents={newsEvents}
+        volunteerStories={volunteerStories}
+      />
+    </HomePageClient>
+  )
 }
 
 // The export below is for the main function that fetches data.
