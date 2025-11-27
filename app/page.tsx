@@ -10,9 +10,9 @@ import { Linkedin, Mail, Instagram, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
 import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
-import { HomepageWrapper } from "@/components/homepage-wrapper" // Added import
 import { NewsEventsSection } from "@/components/news-events-section" // Import the new client-side NewsEventsSection component instead of rendering inline
 import { unstable_noStore as noStore } from "next/cache"
+import { HomepageWrapper } from "@/components/homepage-wrapper" // Assuming HomepageWrapper is correctly imported
 
 export const revalidate = 0
 export const dynamic = "force-dynamic"
@@ -960,45 +960,30 @@ async function HomePageContent({
       <script
         dangerouslySetInnerHTML={{
           __html: `
-          // Immediate fallback - show all content if script is slow
-          setTimeout(() => {
-            document.querySelectorAll('.fade-in-up, .fade-in').forEach(el => {
-              if (!el.classList.contains('visible')) {
-                el.classList.add('visible');
-              }
-            });
-          }, 2000); // Show everything after 2 seconds max
-
           document.addEventListener('DOMContentLoaded', function() {
             const observerOptions = {
-              threshold: 0.01, // Very low threshold - triggers as soon as element enters viewport
-              rootMargin: '50px 0px 50px 0px' // Start animation before element is fully visible
+              threshold: 0.05,
+              rootMargin: '100px 0px 100px 0px'
             };
 
             const observer = new IntersectionObserver(function(entries) {
               entries.forEach(entry => {
                 if (entry.isIntersecting) {
                   entry.target.classList.add('visible');
-                  observer.unobserve(entry.target); // Stop observing after animation to improve performance
+                  observer.unobserve(entry.target);
                 }
               });
             }, observerOptions);
 
-            // Observe all fade elements
-            document.querySelectorAll('.fade-in-up, .fade-in').forEach(el => {
-              // Skip hero elements - they're already visible
-              if (!el.classList.contains('hero-instant')) {
-                observer.observe(el);
-              }
-            });
-
-            // Immediate trigger for elements already in viewport
             requestAnimationFrame(() => {
               document.querySelectorAll('.fade-in-up, .fade-in').forEach(el => {
                 const rect = el.getBoundingClientRect();
-                const isInViewport = rect.top < window.innerHeight * 1.2 && rect.bottom > 0;
-                if (isInViewport || el.classList.contains('hero-instant')) {
+                const isInViewport = rect.top < window.innerHeight * 1.5;
+                
+                if (isInViewport) {
                   el.classList.add('visible');
+                } else {
+                  observer.observe(el);
                 }
               });
             });
@@ -1017,7 +1002,6 @@ async function HomePageContent({
                 const interest = formData.get('interest') || 'Not specified';
                 const message = formData.get('message');
 
-                // Create WhatsApp message
                 const whatsappMessage = \`*New Volunteer Application*
 
 *Name:* \${name}
@@ -1027,11 +1011,9 @@ async function HomePageContent({
 *Area of Interest:* \${interest}
 *Message:* \${message}\`;
 
-                // Open WhatsApp with pre-filled message
                 const whatsappUrl = \`https://wa.me/254756288563?text=\${encodeURIComponent(whatsappMessage)}\`;
                 window.open(whatsappUrl, '_blank');
 
-                // Reset form
                 volunteerForm.reset();
               });
             }
@@ -1081,9 +1063,9 @@ async function HomePage() {
   const supabase = await createClient()
 
   try {
-    console.log("[v0] Fetching homepage data...")
-    const fetchWithTimeout = async (promise: Promise<any>, timeout = 5000) => {
-      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Query timeout")), timeout))
+    const fetchWithTimeout = async (promise: Promise<any>, timeout = 3000) => {
+      // Added explicit resolve for timeout to avoid potential race condition issues
+      const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve({ data: [], error: null }), timeout))
       return Promise.race([promise, timeoutPromise])
     }
 
@@ -1115,14 +1097,6 @@ async function HomePage() {
     const gallery = galleryResult.data || []
     const newsEvents = newsEventsResult.data || []
     const volunteerStories = volunteerStoriesResult.data || []
-
-    console.log("[v0] Homepage data fetched:", {
-      projects: projects.length,
-      testimonials: testimonials.length,
-      gallery: gallery.length,
-      newsEvents: newsEvents.length,
-      volunteerStories: volunteerStories.length,
-    })
 
     return (
       <HomepageWrapper>
