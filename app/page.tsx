@@ -37,11 +37,25 @@ async function HomePageContent({
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                EA
-              </div>
-              <span className="font-semibold text-gray-900">EducateAll Youth Organization</span>
+            <div className="flex items-center gap-3">
+              <svg width="200" height="140" viewBox="0 0 200 140" className="w-10 h-10" fill="none">
+                <text x="10" y="70" fontFamily="Arial, sans-serif" fontSize="48" fontWeight="bold" fill="#0284C7">
+                  EducateAll
+                </text>
+                <text
+                  x="30"
+                  y="105"
+                  fontFamily="Arial, sans-serif"
+                  fontSize="16"
+                  fontWeight="500"
+                  fill="#9CA3AF"
+                  letterSpacing="2"
+                >
+                  YOUTH ORGANIZATION
+                </text>
+                <line x1="30" y1="115" x2="185" y2="115" stroke="#FCD34D" strokeWidth="3" />
+              </svg>
+              <span className="font-semibold text-gray-900 hidden sm:inline">EducateAll Youth Organization</span>
             </div>
 
             {/* Desktop Navigation */}
@@ -517,9 +531,12 @@ async function HomePageContent({
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-4xl font-bold mb-4">
-                    LM
-                  </div>
+                  {/* CHANGE: Replace LM placeholder with professional headshot */}
+                  <img
+                    src="/images/img-20251127-081848.jpg"
+                    alt="Levis Mokaya"
+                    className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-orange-200"
+                  />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Levis Mokaya</h3>
                   <p className="text-orange-600 font-semibold mb-4">Project Manager & Developer</p>
                   <p className="text-gray-600 leading-relaxed">
@@ -536,9 +553,11 @@ async function HomePageContent({
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center text-white text-4xl font-bold mb-4">
-                    AM
-                  </div>
+                  <img
+                    src="/images/img-20251127-081905.jpg"
+                    alt="Arsene Mwangi"
+                    className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-purple-200"
+                  />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Arsene Mwangi</h3>
                   <p className="text-purple-600 font-semibold mb-4">Programs Coordinator</p>
                   <p className="text-gray-600 leading-relaxed">
@@ -556,9 +575,11 @@ async function HomePageContent({
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-pink-600 to-pink-700 flex items-center justify-center text-white text-4xl font-bold mb-4">
-                    CA
-                  </div>
+                  <img
+                    src="/images/img-20251127-082913.jpg"
+                    alt="Christabel Aloo Ochieng"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-pink-600 mb-4"
+                  />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Christabel Aloo Ochieng</h3>
                   <p className="text-pink-600 font-semibold mb-4">Events & Mobilization Coordinator</p>
                   <p className="text-gray-600 leading-relaxed">
@@ -800,9 +821,23 @@ async function HomePageContent({
           <div className="grid md:grid-cols-4 gap-8 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                  EA
-                </div>
+                <svg width="40" height="40" viewBox="0 0 200 140" className="w-10 h-10" fill="none">
+                  <text x="10" y="70" fontFamily="Arial, sans-serif" fontSize="48" fontWeight="bold" fill="#0284C7">
+                    EducateAll
+                  </text>
+                  <text
+                    x="30"
+                    y="105"
+                    fontFamily="Arial, sans-serif"
+                    fontSize="16"
+                    fontWeight="500"
+                    fill="#9CA3AF"
+                    letterSpacing="2"
+                  >
+                    YOUTH ORGANIZATION
+                  </text>
+                  <line x1="30" y1="115" x2="185" y2="115" stroke="#FCD34D" strokeWidth="3" />
+                </svg>
                 <span className="font-semibold">EducateAll Youth</span>
               </div>
               <p className="text-gray-400 leading-relaxed">

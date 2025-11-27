@@ -221,6 +221,15 @@ export default function CreativeSubmissionsManager() {
                 />
               </label>
             </div>
+            {editForm.category === "Art" && submission.video_url && (
+              <div className="border rounded p-3 bg-blue-50">
+                <label className="block text-sm font-medium mb-2 text-gray-700">Video Preview</label>
+                <video controls className="w-full rounded bg-black" style={{ maxHeight: "300px" }}>
+                  <source src={submission.video_url} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            )}
             <div className="flex gap-2 justify-end pt-3 border-t">
               <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>
                 Cancel
@@ -263,6 +272,11 @@ export default function CreativeSubmissionsManager() {
                 <p className="text-xs text-gray-600 mt-1">{submission.author_instagram}</p>
               )}
             </div>
+            {submission.category === "Art" && submission.video_url && (
+              <div className="w-16 h-16 ml-3 bg-purple-200 rounded flex-shrink-0 flex items-center justify-center text-xs text-purple-700 font-bold">
+                VIDEO
+              </div>
+            )}
             {submission.image_url && (
               <div className="w-16 h-16 ml-3 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center text-xs text-gray-500">
                 Image
@@ -270,6 +284,16 @@ export default function CreativeSubmissionsManager() {
             )}
           </div>
           <div className="flex gap-2 pt-2 border-t flex-wrap">
+            {submission.category === "Art" && submission.video_url && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-purple-300 text-purple-700 hover:bg-purple-50 bg-transparent"
+                onClick={() => setViewingId(submission.id)}
+              >
+                Preview Video
+              </Button>
+            )}
             <Button size="sm" variant="outline" onClick={() => startEditing(submission)}>
               <Edit2 size={14} className="mr-1" />
               Edit
@@ -289,6 +313,40 @@ export default function CreativeSubmissionsManager() {
           </div>
         </div>
       </Card>
+    )
+  }
+
+  const VideoModal = ({ submission }: any) => {
+    if (!submission || !submission.video_url) return null
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-2xl bg-white rounded-lg overflow-hidden">
+          <div className="bg-gray-900 p-4 flex justify-between items-center">
+            <h3 className="text-white font-semibold">{submission.title}</h3>
+            <button onClick={() => setViewingId(null)} className="text-white hover:text-gray-300 text-2xl">
+              ×
+            </button>
+          </div>
+          <div className="p-4 space-y-3">
+            <video controls autoPlay className="w-full bg-black rounded" style={{ maxHeight: "500px" }}>
+              <source src={submission.video_url} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            <div className="space-y-2">
+              <p className="text-sm">
+                <span className="font-semibold">Author:</span> {submission.author_name}
+              </p>
+              <p className="text-sm">
+                <span className="font-semibold">Category:</span> {submission.category}
+              </p>
+              <p className="text-sm">
+                <span className="font-semibold">Description:</span> {submission.content}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
     )
   }
 
@@ -344,6 +402,8 @@ export default function CreativeSubmissionsManager() {
           )}
         </TabsContent>
       </Tabs>
+
+      {viewingId && <VideoModal submission={submissions.find((s) => s.id === viewingId)} />}
     </div>
   )
 }
