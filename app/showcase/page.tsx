@@ -3,8 +3,12 @@ import ShowcaseClient from "@/components/showcase-client"
 
 export const revalidate = 0
 
+const ITEMS_PER_PAGE = 12
+
 export default async function ShowcasePage() {
   let submissions = []
+  let totalCount = 0
+
   try {
     const adminSupabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
       auth: {
@@ -13,11 +17,19 @@ export default async function ShowcasePage() {
       },
     })
 
+    const { count } = await adminSupabase
+      .from("creative_submissions")
+      .select("*", { count: "exact", head: true })
+      .eq("published", true)
+
+    totalCount = count || 0
+
     const { data, error } = await adminSupabase
       .from("creative_submissions")
       .select("*")
       .eq("published", true)
       .order("created_at", { ascending: false })
+      .range(0, ITEMS_PER_PAGE - 1)
 
     if (data) {
       submissions = data
@@ -30,5 +42,5 @@ export default async function ShowcasePage() {
     submissions = []
   }
 
-  return <ShowcaseClient initialSubmissions={submissions} />
+  return <ShowcaseClient initialSubmissions={submissions} totalCount={totalCount} itemsPerPage={ITEMS_PER_PAGE} />
 }

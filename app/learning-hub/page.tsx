@@ -10,16 +10,28 @@ export const metadata: Metadata = {
 
 export const revalidate = 0
 
+const ITEMS_PER_PAGE = 12
+
 export default async function LearningHubPage() {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || "", process.env.SUPABASE_SERVICE_ROLE_KEY || "")
 
   let posts = []
+  let totalCount = 0
+
   try {
+    const { count } = await supabase
+      .from("learning_posts")
+      .select("*", { count: "exact", head: true })
+      .eq("published", true)
+
+    totalCount = count || 0
+
     const { data, error } = await supabase
       .from("learning_posts")
       .select("*")
       .eq("published", true)
       .order("created_at", { ascending: false })
+      .range(0, ITEMS_PER_PAGE - 1)
 
     if (data) {
       posts = data
@@ -32,8 +44,6 @@ export default async function LearningHubPage() {
     posts = []
   }
 
-  console.log("[v0] Posts loaded:", posts.length)
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/50">
       <div className="max-w-6xl mx-auto px-4 py-12">
@@ -44,7 +54,7 @@ export default async function LearningHubPage() {
           </p>
         </div>
 
-        <LearningHubClient initialPosts={posts} />
+        <LearningHubClient initialPosts={posts} totalCount={totalCount} itemsPerPage={ITEMS_PER_PAGE} />
       </div>
     </div>
   )

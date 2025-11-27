@@ -7,16 +7,27 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Share2 } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
 
 const CREATIVE_CATEGORIES = ["Poems", "Art", "Spoken Art", "Short Stories"]
 
-export default function ShowcaseClient({ initialSubmissions }: { initialSubmissions: any[] }) {
+export default function ShowcaseClient({
+  initialSubmissions,
+  totalCount,
+  itemsPerPage,
+}: {
+  initialSubmissions: any[]
+  totalCount: number
+  itemsPerPage: number
+}) {
   const [submissions, setSubmissions] = useState<any[]>(initialSubmissions)
   const [filteredSubmissions, setFilteredSubmissions] = useState<any[]>(initialSubmissions)
   const [selectedCategory, setSelectedCategory] = useState<string>("All")
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [selectedPost, setSelectedPost] = useState<any | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [allLoaded, setAllLoaded] = useState(initialSubmissions.length >= totalCount)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -47,23 +58,35 @@ export default function ShowcaseClient({ initialSubmissions }: { initialSubmissi
     setFilteredSubmissions(filtered)
   }, [selectedCategory, searchTerm, submissions])
 
-  const handleShare = async (submission: any) => {
-    const shareUrl = `${window.location.origin}/showcase?post=${submission.id}`
-    const shareText = `Check out this ${submission.category.toLowerCase()}: "${submission.title}" by ${submission.author_name}`
+  const loadMoreSubmissions = async () => {
+    setIsLoading(true)
+    try {
+      const supabase = createClient()
+      const from = currentPage * itemsPerPage
+      const to = from + itemsPerPage - 1
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: submission.title,
-          text: shareText,
-          url: shareUrl,
-        })
-      } catch (err) {
-        console.log("Share cancelled")
+      const { data, error } = await supabase
+        .from("creative_submissions")
+        .select("*")
+        .eq("published", true)
+        .order("created_at", { ascending: false })
+        .range(from, to)
+
+      if (data && data.length > 0) {
+        const newSubmissions = [...submissions, ...data]
+        setSubmissions(newSubmissions)
+        setCurrentPage(currentPage + 1)
+
+        if (newSubmissions.length >= totalCount) {
+          setAllLoaded(true)
+        }
+      } else {
+        setAllLoaded(true)
       }
-    } else {
-      navigator.clipboard.writeText(shareUrl)
-      alert("Link copied to clipboard! Share via WhatsApp, Instagram, email, or any platform.")
+    } catch (error) {
+      console.error("[v0] Error loading more submissions:", error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -115,7 +138,7 @@ export default function ShowcaseClient({ initialSubmissions }: { initialSubmissi
         </div>
 
         {/* Content Grid */}
-        {isLoading ? (
+        {isLoading && submissions.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500">Loading submissions...</p>
           </div>
@@ -127,69 +150,93 @@ export default function ShowcaseClient({ initialSubmissions }: { initialSubmissi
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredSubmissions.map((submission) => (
-              <Card key={submission.id} className="hover:shadow-lg transition-shadow">
-                {submission.video_url ? (
-                  <div className="aspect-video w-full overflow-hidden bg-slate-200">
-                    <video
-                      src={submission.video_url}
-                      controls
-                      className="w-full h-full object-cover"
-                      preload="metadata"
-                    />
-                  </div>
-                ) : submission.image_url ? (
-                  <div className="aspect-video w-full overflow-hidden bg-slate-200">
-                    <img
-                      src={submission.image_url || "/placeholder.svg"}
-                      alt={submission.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : null}
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <CardTitle className="line-clamp-2">{submission.title}</CardTitle>
-                      <CardDescription className="text-teal-600 font-semibold mt-1">
-                        {submission.category}
-                      </CardDescription>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredSubmissions.map((submission) => (
+                <Card key={submission.id} className="hover:shadow-lg transition-shadow">
+                  {submission.video_url ? (
+                    <div className="aspect-video w-full overflow-hidden bg-slate-200">
+                      <video
+                        src={submission.video_url}
+                        controls
+                        className="w-full h-full object-cover"
+                        preload="metadata"
+                      />
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-gray-700 line-clamp-3">{submission.content}</p>
-                  <div className="pt-2 border-t">
-                    <p className="text-sm font-semibold text-gray-900">By {submission.author_name}</p>
-                    {submission.author_instagram && (
-                      <a
-                        href={`https://instagram.com/${submission.author_instagram.replace("@", "")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-teal-600 hover:text-teal-700"
+                  ) : submission.image_url ? (
+                    <div className="aspect-video w-full overflow-hidden bg-slate-200">
+                      <img
+                        src={submission.image_url || "/placeholder.svg"}
+                        alt={submission.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : null}
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <CardTitle className="line-clamp-2">{submission.title}</CardTitle>
+                        <CardDescription className="text-teal-600 font-semibold mt-1">
+                          {submission.category}
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-gray-700 line-clamp-3">{submission.content}</p>
+                    <div className="pt-2 border-t">
+                      <p className="text-sm font-semibold text-gray-900">By {submission.author_name}</p>
+                      {submission.author_instagram && (
+                        <a
+                          href={`https://instagram.com/${submission.author_instagram.replace("@", "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-teal-600 hover:text-teal-700"
+                        >
+                          @{submission.author_instagram.replace("@", "")}
+                        </a>
+                      )}
+                      <p className="text-xs text-gray-500 mt-2">
+                        {new Date(submission.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1 bg-transparent"
+                        onClick={() => setSelectedPost(submission)}
                       >
-                        @{submission.author_instagram.replace("@", "")}
-                      </a>
-                    )}
-                    <p className="text-xs text-gray-500 mt-2">{new Date(submission.created_at).toLocaleDateString()}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1 bg-transparent"
-                      onClick={() => setSelectedPost(submission)}
-                    >
-                      Read Full Post
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleShare(submission)} title="Share this post">
-                      <Share2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                        Read Full Post
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleShare(submission)}
+                        title="Share this post"
+                      >
+                        <Share2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {!allLoaded && selectedCategory === "All" && !searchTerm && (
+              <div className="mt-8 text-center">
+                <Button
+                  onClick={loadMoreSubmissions}
+                  disabled={isLoading}
+                  className="bg-teal-600 hover:bg-teal-700 px-8"
+                >
+                  {isLoading ? "Loading..." : "Load More"}
+                </Button>
+                <p className="text-sm text-gray-500 mt-2">
+                  Showing {submissions.length} of {totalCount} submissions
+                </p>
+              </div>
+            )}
+          </>
         )}
 
         <Dialog open={!!selectedPost} onOpenChange={(open) => !open && setSelectedPost(null)}>
@@ -247,4 +294,24 @@ export default function ShowcaseClient({ initialSubmissions }: { initialSubmissi
       </div>
     </main>
   )
+}
+
+const handleShare = async (submission: any) => {
+  const shareUrl = `${window.location.origin}/showcase?post=${submission.id}`
+  const shareText = `Check out this ${submission.category.toLowerCase()}: "${submission.title}" by ${submission.author_name}`
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: submission.title,
+        text: shareText,
+        url: shareUrl,
+      })
+    } catch (err) {
+      console.log("Share cancelled")
+    }
+  } else {
+    navigator.clipboard.writeText(shareUrl)
+    alert("Link copied to clipboard! Share via WhatsApp, Instagram, email, or any platform.")
+  }
 }
