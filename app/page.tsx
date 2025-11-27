@@ -513,6 +513,7 @@ async function HomePageContent({
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
                 <div className="flex flex-col items-center text-center">
+                  {/* CHANGE: Replace BO placeholder gradient with a professional headshot - update when photo is available */}
                   <div className="w-32 h-32 rounded-full bg-gradient-to-br from-teal-600 to-teal-700 flex items-center justify-center text-white text-4xl font-bold mb-4">
                     BO
                   </div>
