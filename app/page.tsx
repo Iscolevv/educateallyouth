@@ -6,7 +6,24 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
-import { Linkedin, Mail, Instagram, Menu } from "lucide-react"
+import {
+  Linkedin,
+  Mail,
+  Instagram,
+  Menu,
+  Home,
+  BookOpen,
+  FolderKanban,
+  ImageIcon,
+  MessageSquare,
+  Users,
+  GraduationCap,
+  Palette,
+  Heart,
+  Newspaper,
+  DollarSign,
+  Shield,
+} from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
 import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
@@ -34,7 +51,7 @@ async function HomePageContent({
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header/Navigation */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -98,51 +115,128 @@ async function HomePageContent({
               </Link>
             </div>
 
-            {/* Mobile Navigation */}
+            {/* Mobile Navigation - Modernized with icons, better spacing, and visual hierarchy */}
             <Sheet>
               <SheetTrigger asChild className="md:hidden">
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6" />
+                <Button variant="ghost" size="icon" className="hover:bg-teal-50">
+                  <Menu className="h-6 w-6 text-teal-600" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px]">
-                <div className="flex flex-col gap-6 mt-8">
-                  <a href="#about" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    About
-                  </a>
-                  <a href="#story" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    Our Story
-                  </a>
-                  <a href="#projects" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    Projects
-                  </a>
-                  <a href="#gallery" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    Gallery
-                  </a>
-                  <a href="#testimonials" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    Testimonials
-                  </a>
-                  <a href="#team" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    Meet the Team
-                  </a>
-                  <Link href="/learning-hub" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    Learning Hub
-                  </Link>
-                  <Link href="/showcase" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    Youth Showcase
-                  </Link>
-                  <a href="#volunteer" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    Volunteer
-                  </a>
-                  <a href="#news" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    News & Events
-                  </a>
-                  <a href="#donate" className="text-lg text-gray-700 hover:text-teal-600 transition-colors">
-                    Support & Donate
-                  </a>
-                  <Link href="/admin/login">
-                    <Button className="w-full bg-teal-600 hover:bg-teal-700 text-white">Admin</Button>
-                  </Link>
+              <SheetContent side="right" className="w-[320px] p-0">
+                <div className="flex flex-col h-full">
+                  {/* Header with logo */}
+                  <div className="bg-gradient-to-r from-teal-600 to-cyan-600 p-6">
+                    <svg width="280" height="80" viewBox="0 0 350 80" className="w-auto h-10" fill="none">
+                      <text x="0" y="30" fontFamily="Arial, sans-serif" fontSize="32" fontWeight="bold" fill="#FFFFFF">
+                        EducateAll
+                      </text>
+                      <text
+                        x="0"
+                        y="55"
+                        fontFamily="Arial, sans-serif"
+                        fontSize="12"
+                        fontWeight="500"
+                        fill="#E0F2FE"
+                        letterSpacing="1.5"
+                      >
+                        YOUTH ORGANIZATION
+                      </text>
+                      <line x1="0" y1="65" x2="220" y2="65" stroke="#FCD34D" strokeWidth="2" />
+                    </svg>
+                  </div>
+
+                  {/* Navigation Links */}
+                  <div className="flex-1 overflow-y-auto py-4">
+                    <div className="space-y-1 px-3">
+                      <a
+                        href="#about"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <Home className="h-5 w-5" />
+                        <span className="font-medium">About</span>
+                      </a>
+                      <a
+                        href="#story"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <BookOpen className="h-5 w-5" />
+                        <span className="font-medium">Our Story</span>
+                      </a>
+                      <a
+                        href="#projects"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <FolderKanban className="h-5 w-5" />
+                        <span className="font-medium">Projects</span>
+                      </a>
+                      <a
+                        href="#gallery"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <ImageIcon className="h-5 w-5" />
+                        <span className="font-medium">Gallery</span>
+                      </a>
+                      <a
+                        href="#testimonials"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <MessageSquare className="h-5 w-5" />
+                        <span className="font-medium">Testimonials</span>
+                      </a>
+                      <a
+                        href="#team"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <Users className="h-5 w-5" />
+                        <span className="font-medium">Meet the Team</span>
+                      </a>
+                      <Link
+                        href="/learning-hub"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <GraduationCap className="h-5 w-5" />
+                        <span className="font-medium">Learning Hub</span>
+                      </Link>
+                      <Link
+                        href="/showcase"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <Palette className="h-5 w-5" />
+                        <span className="font-medium">Youth Showcase</span>
+                      </Link>
+                      <a
+                        href="#volunteer"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <Heart className="h-5 w-5" />
+                        <span className="font-medium">Volunteer</span>
+                      </a>
+                      <a
+                        href="#news"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <Newspaper className="h-5 w-5" />
+                        <span className="font-medium">News & Events</span>
+                      </a>
+                      <a
+                        href="#donate"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-all"
+                      >
+                        <DollarSign className="h-5 w-5" />
+                        <span className="font-medium">Support & Donate</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Admin Button at bottom */}
+                  <div className="p-4 border-t bg-gray-50">
+                    <Link href="/admin/login" className="block">
+                      <Button className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold py-3 shadow-lg">
+                        <Shield className="h-5 w-5 mr-2" />
+                        Admin Portal
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

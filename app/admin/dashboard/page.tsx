@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ProjectsManager from "@/components/admin/projects-manager"
 import NewsEventsManager from "@/components/admin/news-events-manager"
@@ -30,16 +30,58 @@ export default async function AdminDashboard() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
 
         <Tabs defaultValue="projects" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="projects">Projects</TabsTrigger>
-            <TabsTrigger value="news">News & Events</TabsTrigger>
-            <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
-            <TabsTrigger value="gallery">Gallery</TabsTrigger>
-            <TabsTrigger value="volunteers">Volunteers</TabsTrigger>
-            <TabsTrigger value="volunteer-stories">Volunteer Stories</TabsTrigger>
-            <TabsTrigger value="learning">Learning Hub</TabsTrigger>
-            <TabsTrigger value="creative">Creative Showcase</TabsTrigger>
-          </TabsList>
+          <div className="bg-white rounded-lg shadow-sm p-2">
+            <TabsList className="w-full h-auto flex flex-wrap gap-2 bg-transparent">
+              <TabsTrigger
+                value="projects"
+                className="flex-1 min-w-[120px] data-[state=active]:bg-teal-600 data-[state=active]:text-white"
+              >
+                Projects
+              </TabsTrigger>
+              <TabsTrigger
+                value="news"
+                className="flex-1 min-w-[120px] data-[state=active]:bg-teal-600 data-[state=active]:text-white"
+              >
+                News & Events
+              </TabsTrigger>
+              <TabsTrigger
+                value="testimonials"
+                className="flex-1 min-w-[120px] data-[state=active]:bg-teal-600 data-[state=active]:text-white"
+              >
+                Testimonials
+              </TabsTrigger>
+              <TabsTrigger
+                value="gallery"
+                className="flex-1 min-w-[120px] data-[state=active]:bg-teal-600 data-[state=active]:text-white"
+              >
+                Gallery
+              </TabsTrigger>
+              <TabsTrigger
+                value="volunteers"
+                className="flex-1 min-w-[120px] data-[state=active]:bg-teal-600 data-[state=active]:text-white"
+              >
+                Volunteers
+              </TabsTrigger>
+              <TabsTrigger
+                value="volunteer-stories"
+                className="flex-1 min-w-[140px] data-[state=active]:bg-teal-600 data-[state=active]:text-white"
+              >
+                Stories
+              </TabsTrigger>
+              <TabsTrigger
+                value="learning"
+                className="flex-1 min-w-[120px] data-[state=active]:bg-teal-600 data-[state=active]:text-white"
+              >
+                Learning Hub
+              </TabsTrigger>
+              <TabsTrigger
+                value="creative"
+                className="flex-1 min-w-[120px] data-[state=active]:bg-teal-600 data-[state=active]:text-white"
+              >
+                Showcase
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="projects">
             <ProjectsManager />
