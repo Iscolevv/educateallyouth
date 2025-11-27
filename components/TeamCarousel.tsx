@@ -12,6 +12,7 @@ const TEAM_MEMBERS = [
     role: "Founder & Executive Director",
     color: "from-teal-600 to-teal-700",
     roleColor: "text-teal-600",
+    image: null,
     description:
       "Brian Onyango is an alumni of Starehe Boys Centre & School and the Founder of EducateAll Youth Organization. He is passionate about empowering young people through education, mentorship, and community service. He leads the organization's vision and oversees its strategic growth.",
   },
@@ -22,6 +23,7 @@ const TEAM_MEMBERS = [
     role: "Project Manager & Developer",
     color: "from-orange-500 to-orange-600",
     roleColor: "text-orange-600",
+    image: "/images/img-20251127-081848.jpg",
     description:
       "Levis Mokaya is a Data Science student at the University of Nairobi and serves as the Project Manager and Developer for EducateAll Youth Organization. He leads the technical direction of the organization, developing systems that connect volunteers, manage projects, and highlight the group's community impact.",
   },
@@ -32,6 +34,7 @@ const TEAM_MEMBERS = [
     role: "Programs Coordinator",
     color: "from-purple-600 to-purple-700",
     roleColor: "text-purple-600",
+    image: "/images/img-20251127-081905.jpg",
     description:
       "Arsene Mwangi is a Software Engineering student at the United States International University (USIU–Africa) and serves as the Programs Coordinator at Educate All Youth Initiative. Passionate about technology, education, and youth empowerment, Arsene plays a key role in coordinating outreach programs, school partnerships, and innovation-driven initiatives.",
   },
@@ -42,6 +45,7 @@ const TEAM_MEMBERS = [
     role: "Events & Mobilization Coordinator",
     color: "from-pink-600 to-pink-700",
     roleColor: "text-pink-600",
+    image: "/images/img-20251127-082913.jpg",
     description:
       "Christabel Aloo Ochieng is a Law student at Kisii University and serves as the Events & Mobilization Coordinator at EducateAll Youth Initiative. A passionate advocate for political awareness, leadership, and youth empowerment, Christabel plays a vital role in coordinating events and mobilizing audiences.",
   },
@@ -99,11 +103,29 @@ export default function TeamCarousel() {
           <Card className="overflow-hidden hover:shadow-xl transition-shadow">
             <CardContent className="p-8">
               <div className="flex flex-col items-center text-center">
-                <div
-                  className={`w-32 h-32 rounded-full bg-gradient-to-br ${member.color} flex items-center justify-center text-white text-4xl font-bold mb-4`}
-                >
-                  {member.initials}
-                </div>
+                {member.image ? (
+                  <img
+                    src={member.image || "/placeholder.svg"}
+                    alt={member.name}
+                    className="w-32 h-32 rounded-full object-cover mb-4 border-4"
+                    style={{
+                      borderColor:
+                        member.roleColor.replace("text-", "").split("-")[0] === "teal"
+                          ? "#14b8a6"
+                          : member.roleColor.includes("orange")
+                            ? "#ea580c"
+                            : member.roleColor.includes("purple")
+                              ? "#a855f7"
+                              : "#ec4899",
+                    }}
+                  />
+                ) : (
+                  <div
+                    className={`w-32 h-32 rounded-full bg-gradient-to-br ${member.color} flex items-center justify-center text-white text-4xl font-bold mb-4`}
+                  >
+                    {member.initials}
+                  </div>
+                )}
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">{member.name}</h3>
                 <p className={`${member.roleColor} font-semibold mb-4`}>{member.role}</p>
                 <p className="text-gray-600 leading-relaxed">{member.description}</p>
