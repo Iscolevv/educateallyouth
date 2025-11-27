@@ -74,10 +74,25 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-16x16.jpg", sizes: "16x16", type: "image/jpeg" },
+      { url: "/favicon-32x32.jpg", sizes: "32x32", type: "image/jpeg" },
       { url: "/favicon.ico", sizes: "32x32", type: "image/x-icon" },
     ],
-    apple: "/android-chrome-192x192.jpg",
+    apple: [
+      { url: "/apple-touch-icon.jpg", sizes: "180x180", type: "image/jpeg" },
+      { url: "/apple-icon.jpg", sizes: "192x192", type: "image/jpeg" },
+    ],
     shortcut: "/favicon.ico",
+    other: [
+      {
+        rel: "android-chrome",
+        url: "/android-chrome-192x192.jpg",
+      },
+      {
+        rel: "android-chrome",
+        url: "/android-chrome-512x512.jpg",
+      },
+    ],
   },
   manifest: "/site.webmanifest",
   generator: "v0.app",

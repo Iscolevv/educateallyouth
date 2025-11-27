@@ -44,10 +44,23 @@ function LoginForm() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center text-white font-bold">
-              EA
-            </div>
-            <span className="font-semibold text-gray-900 text-lg">Admin Portal</span>
+            <svg width="180" height="60" viewBox="0 0 350 80" className="h-12 w-auto">
+              <text x="10" y="32" fontFamily="Arial, sans-serif" fontSize="28" fontWeight="600" fill="#0284C7">
+                EducateAll
+              </text>
+              <line x1="10" y1="42" x2="260" y2="42" stroke="#F59E0B" strokeWidth="3" />
+              <text
+                x="10"
+                y="62"
+                fontFamily="Arial, sans-serif"
+                fontSize="14"
+                fontWeight="400"
+                fill="#6B7280"
+                letterSpacing="2"
+              >
+                YOUTH ORGANIZATION
+              </text>
+            </svg>
           </div>
 
           <Card>

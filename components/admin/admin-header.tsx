@@ -25,10 +25,23 @@ export default function AdminHeader({ userEmail }: { userEmail: string }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                EA
-              </div>
-              <span className="font-semibold text-gray-900">Admin Dashboard</span>
+              <svg width="160" height="50" viewBox="0 0 350 80" className="h-10 w-auto">
+                <text x="10" y="32" fontFamily="Arial, sans-serif" fontSize="28" fontWeight="600" fill="#0284C7">
+                  EducateAll
+                </text>
+                <line x1="10" y1="42" x2="260" y2="42" stroke="#F59E0B" strokeWidth="3" />
+                <text
+                  x="10"
+                  y="62"
+                  fontFamily="Arial, sans-serif"
+                  fontSize="14"
+                  fontWeight="400"
+                  fill="#6B7280"
+                  letterSpacing="2"
+                >
+                  YOUTH ORGANIZATION
+                </text>
+              </svg>
             </Link>
           </div>
 
