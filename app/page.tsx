@@ -961,31 +961,10 @@ async function HomePageContent({
         dangerouslySetInnerHTML={{
           __html: `
           document.addEventListener('DOMContentLoaded', function() {
-            const observerOptions = {
-              threshold: 0.05,
-              rootMargin: '100px 0px 100px 0px'
-            };
-
-            const observer = new IntersectionObserver(function(entries) {
-              entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                  entry.target.classList.add('visible');
-                  observer.unobserve(entry.target);
-                }
-              });
-            }, observerOptions);
-
-            requestAnimationFrame(() => {
-              document.querySelectorAll('.fade-in-up, .fade-in').forEach(el => {
-                const rect = el.getBoundingClientRect();
-                const isInViewport = rect.top < window.innerHeight * 1.5;
-                
-                if (isInViewport) {
-                  el.classList.add('visible');
-                } else {
-                  observer.observe(el);
-                }
-              });
+            // Simple, fast visibility without complex conditions
+            document.querySelectorAll('.fade-in-up, .fade-in').forEach(el => {
+              el.style.opacity = '1';
+              el.style.transform = 'translateY(0)';
             });
 
             // Volunteer form submission
@@ -998,22 +977,15 @@ async function HomePageContent({
                 const name = formData.get('name');
                 const email = formData.get('email');
                 const phone = formData.get('phone');
-                const availability = formData.get('availability') || 'Not specified';
-                const interest = formData.get('interest') || 'Not specified';
+                const availability = formData.get('availability');
+                const interest = formData.get('interest');
                 const message = formData.get('message');
-
-                const whatsappMessage = \`*New Volunteer Application*
-
-*Name:* \${name}
-*Email:* \${email}
-*Phone:* \${phone}
-*Availability:* \${availability}
-*Area of Interest:* \${interest}
-*Message:* \${message}\`;
-
-                const whatsappUrl = \`https://wa.me/254756288563?text=\${encodeURIComponent(whatsappMessage)}\`;
-                window.open(whatsappUrl, '_blank');
-
+                
+                const whatsappMessage = \`Hello! I'd like to volunteer with EducateAll Youth Organization.\\n\\nName: \${name}\\nEmail: \${email}\\nPhone: \${phone}\\nAvailability: \${availability || 'Not specified'}\\nArea of Interest: \${interest || 'Not specified'}\\n\\nMotivation:\\n\${message}\`;
+                const encodedMessage = encodeURIComponent(whatsappMessage);
+                const whatsappURL = \`https://wa.me/254756288563?text=\${encodedMessage}\`;
+                
+                window.open(whatsappURL, '_blank');
                 volunteerForm.reset();
               });
             }
