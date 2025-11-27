@@ -38,24 +38,24 @@ async function HomePageContent({
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <svg width="200" height="140" viewBox="0 0 200 140" className="w-10 h-10" fill="none">
-                <text x="10" y="70" fontFamily="Arial, sans-serif" fontSize="48" fontWeight="bold" fill="#0284C7">
+              <svg width="280" height="80" viewBox="0 0 350 80" className="w-auto h-12" fill="none">
+                <text x="0" y="30" fontFamily="Arial, sans-serif" fontSize="32" fontWeight="bold" fill="#0284C7">
                   EducateAll
                 </text>
                 <text
-                  x="30"
-                  y="105"
+                  x="0"
+                  y="55"
                   fontFamily="Arial, sans-serif"
-                  fontSize="16"
+                  fontSize="12"
                   fontWeight="500"
                   fill="#9CA3AF"
-                  letterSpacing="2"
+                  letterSpacing="1.5"
                 >
                   YOUTH ORGANIZATION
                 </text>
-                <line x1="30" y1="115" x2="185" y2="115" stroke="#FCD34D" strokeWidth="3" />
+                <line x1="0" y1="65" x2="220" y2="65" stroke="#FCD34D" strokeWidth="2" />
               </svg>
-              <span className="font-semibold text-gray-900 hidden sm:inline">EducateAll Youth Organization</span>
+              <span className="font-semibold text-gray-900 hidden sm:inline">EducateAll Youth</span>
             </div>
 
             {/* Desktop Navigation */}
@@ -532,7 +532,6 @@ async function HomePageContent({
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
                 <div className="flex flex-col items-center text-center">
-                  {/* CHANGE: Replace LM placeholder with professional headshot */}
                   <img
                     src="/images/img-20251127-081848.jpg"
                     alt="Levis Mokaya"
