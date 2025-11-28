@@ -30,13 +30,27 @@ export async function updateSession(request: NextRequest) {
     },
   })
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  try {
+    const userPromise = supabase.auth.getUser()
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Auth check timeout")), 2000))
 
-  // Protect admin routes - only check if user is logged in
-  if (request.nextUrl.pathname.startsWith("/admin") && !request.nextUrl.pathname.startsWith("/admin/login")) {
-    if (!user) {
+    const {
+      data: { user },
+    } = await Promise.race([userPromise, timeoutPromise])
+
+    // Protect admin routes - only check if user is logged in
+    if (request.nextUrl.pathname.startsWith("/admin") && !request.nextUrl.pathname.startsWith("/admin/login")) {
+      if (!user) {
+        const url = request.nextUrl.clone()
+        url.pathname = "/admin/login"
+        return NextResponse.redirect(url)
+      }
+    }
+  } catch (error) {
+    console.warn("[v0] Auth check failed or timed out:", error instanceof Error ? error.message : "Unknown error")
+
+    if (request.nextUrl.pathname.startsWith("/admin") && !request.nextUrl.pathname.startsWith("/admin/login")) {
+      // Redirect to login if accessing admin without successful auth
       const url = request.nextUrl.clone()
       url.pathname = "/admin/login"
       return NextResponse.redirect(url)
