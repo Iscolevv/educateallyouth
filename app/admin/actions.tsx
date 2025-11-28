@@ -743,32 +743,24 @@ export async function verifyAdminAndLogin(email: string, password: string) {
       throw new Error("Supabase configuration is missing")
     }
 
-    const supabase = createClient(url, key)
-    console.log("[v0] Attempting admin login for:", email)
+    const { createClient: createAuthClient } = await import("@supabase/supabase-js")
+    const supabaseAuth = createAuthClient(url, key)
 
-    // Query admin_users table
-    const { data: adminUser, error: fetchError } = await supabase
-      .from("admin_users")
-      .select("id, email, password_hash")
-      .eq("email", email)
-      .single()
+    const { data, error } = await supabaseAuth.auth.signInWithPassword({
+      email,
+      password,
+    })
 
-    if (fetchError || !adminUser) {
-      console.error("[v0] Admin user not found:", email)
-      return { success: false, error: "Invalid credentials" }
-    }
-
-    // Simple password comparison (in production, use bcrypt)
-    if (adminUser.password_hash !== password) {
-      console.error("[v0] Invalid password for:", email)
-      return { success: false, error: "Invalid credentials" }
+    if (error || !data?.user) {
+      console.error("[v0] Admin auth failed:", error?.message)
+      return { success: false, error: "Invalid email or password" }
     }
 
     console.log("[v0] Admin login successful for:", email)
-    return { success: true, user: adminUser }
+    return { success: true, user: { id: data.user.id, email: data.user.email } }
   } catch (error) {
     console.error("[v0] Error in verifyAdminAndLogin:", error)
-    const errorMsg = error instanceof Error ? error.message : "An error occurred during login"
+    const errorMsg = error instanceof Error ? error.message : "Login failed"
     return { success: false, error: errorMsg }
   }
 }

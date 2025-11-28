@@ -35,7 +35,7 @@ export async function createClient() {
     },
     global: {
       headers: {
-        "cache-control": "no-cache, no-store, must-revalidate",
+        "cache-control": "public, max-age=60, stale-while-revalidate=300",
       },
     },
   })
