@@ -731,3 +731,35 @@ async function sendApprovalEmail(
     return false
   }
 }
+
+// Admin authentication actions
+export async function verifyAdminAndLogin(email: string, password: string) {
+  try {
+    const supabase = createAdminClient()
+    console.log("[v0] Attempting admin login for:", email)
+
+    // Check if user exists in admin_users table
+    const { data: adminUser, error: fetchError } = await supabase
+      .from("admin_users")
+      .select("id, email, password_hash")
+      .eq("email", email)
+      .single()
+
+    if (fetchError || !adminUser) {
+      console.error("[v0] Admin user not found:", email)
+      return { success: false, error: "Invalid credentials" }
+    }
+
+    // Simple password comparison (in production, use bcrypt)
+    if (adminUser.password_hash !== password) {
+      console.error("[v0] Invalid password for:", email)
+      return { success: false, error: "Invalid credentials" }
+    }
+
+    console.log("[v0] Admin login successful for:", email)
+    return { success: true, user: adminUser }
+  } catch (error) {
+    console.error("[v0] Error in verifyAdminAndLogin:", error)
+    return { success: false, error: "An error occurred during login" }
+  }
+}
