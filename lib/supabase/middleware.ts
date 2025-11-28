@@ -9,7 +9,6 @@ export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
 
-  // If environment variables are missing, return response without auth check
   if (!supabaseUrl || !supabaseAnonKey) {
     return supabaseResponse
   }
@@ -29,20 +28,12 @@ export async function updateSession(request: NextRequest) {
     },
   })
 
-  // Only check auth for protected admin routes without timeout
   if (request.nextUrl.pathname.startsWith("/admin") && !request.nextUrl.pathname.startsWith("/admin/login")) {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-      if (!user) {
-        const url = request.nextUrl.clone()
-        url.pathname = "/admin/login"
-        return NextResponse.redirect(url)
-      }
-    } catch {
-      // If auth check fails, redirect to login
+    if (!user) {
       const url = request.nextUrl.clone()
       url.pathname = "/admin/login"
       return NextResponse.redirect(url)

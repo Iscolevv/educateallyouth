@@ -31,9 +31,8 @@ import { NewsEventsSection } from "@/components/news-events-section" // Import t
 import { unstable_noStore as noStore } from "next/cache"
 import { HomepageWrapper } from "@/components/homepage-wrapper" // Assuming HomepageWrapper is correctly imported
 
-export const revalidate = 0
-export const dynamic = "force-dynamic"
-export const fetchCache = "force-no-store"
+export const revalidate = 60
+export const dynamic = "force-static" // Changed from "force-dynamic"
 
 async function HomePageContent({
   projects,
