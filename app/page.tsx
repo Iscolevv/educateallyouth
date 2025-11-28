@@ -1129,33 +1129,23 @@ async function HomePage() {
   const supabase = await createClient()
 
   try {
-    const fetchWithTimeout = async (promise: Promise<any>, timeout = 3000) => {
-      // Added explicit resolve for timeout to avoid potential race condition issues
-      const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve({ data: [], error: null }), timeout))
-      return Promise.race([promise, timeoutPromise])
-    }
-
     const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, volunteerStoriesResult] =
       await Promise.all([
-        fetchWithTimeout(supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6)),
-        fetchWithTimeout(supabase.from("testimonials").select("*").order("created_at", { ascending: false })),
-        fetchWithTimeout(supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8)),
-        fetchWithTimeout(
-          supabase
-            .from("news_events")
-            .select("*")
-            .eq("published", true)
-            .order("event_date", { ascending: false })
-            .limit(3),
-        ),
-        fetchWithTimeout(
-          supabase
-            .from("volunteer_stories")
-            .select("*")
-            .eq("status", "approved")
-            .order("created_at", { ascending: false })
-            .limit(3),
-        ),
+        supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
+        supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
+        supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8),
+        supabase
+          .from("news_events")
+          .select("*")
+          .eq("published", true)
+          .order("event_date", { ascending: false })
+          .limit(3),
+        supabase
+          .from("volunteer_stories")
+          .select("*")
+          .eq("status", "approved")
+          .order("created_at", { ascending: false })
+          .limit(3),
       ])
 
     const projects = projectsResult.data || []

@@ -735,10 +735,18 @@ async function sendApprovalEmail(
 // Admin authentication actions
 export async function verifyAdminAndLogin(email: string, password: string) {
   try {
-    const supabase = createAdminClient()
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_ANON_KEY
+
+    if (!url || !key) {
+      console.error("[v0] Missing Supabase credentials:", { hasUrl: !!url, hasKey: !!key })
+      throw new Error("Supabase configuration is missing")
+    }
+
+    const supabase = createClient(url, key)
     console.log("[v0] Attempting admin login for:", email)
 
-    // Check if user exists in admin_users table
+    // Query admin_users table
     const { data: adminUser, error: fetchError } = await supabase
       .from("admin_users")
       .select("id, email, password_hash")
@@ -760,6 +768,7 @@ export async function verifyAdminAndLogin(email: string, password: string) {
     return { success: true, user: adminUser }
   } catch (error) {
     console.error("[v0] Error in verifyAdminAndLogin:", error)
-    return { success: false, error: "An error occurred during login" }
+    const errorMsg = error instanceof Error ? error.message : "An error occurred during login"
+    return { success: false, error: errorMsg }
   }
 }
