@@ -738,55 +738,33 @@ export async function verifyAdminAndLogin(email: string, password: string) {
   try {
     console.log("[v0] Admin login attempt for:", email)
 
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const supabase = createAdminClient()
 
-    if (!url || !serviceKey) {
-      console.error("[v0] Missing Supabase credentials")
-      throw new Error("Supabase configuration is missing")
+    // Simple query - no timeouts, no AbortController
+    const { data: adminUser, error: queryError } = await supabase
+      .from("admin_users")
+      .select("email, password")
+      .eq("email", email)
+      .eq("password", password)
+      .single()
+
+    if (queryError || !adminUser) {
+      console.log("[v0] Invalid credentials for:", email)
+      return { success: false, error: "Invalid login credentials" }
     }
 
-    const supabase = createClient(url, serviceKey)
+    console.log("[v0] Admin login successful for:", email)
 
-    // Query admin_users table with timeout
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
+    // Set auth cookie
+    const cookieStore = await cookies()
+    cookieStore.set("admin_auth", email, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    })
 
-    try {
-      const { data: adminUser, error: queryError } = await supabase
-        .from("admin_users")
-        .select("email, password")
-        .eq("email", email)
-        .eq("password", password) // Check password in query directly
-        .single()
-
-      clearTimeout(timeoutId)
-
-      if (queryError || !adminUser) {
-        console.log("[v0] Invalid credentials for:", email)
-        return { success: false, error: "Invalid login credentials" }
-      }
-
-      console.log("[v0] Admin login successful for:", email)
-
-      // Set auth cookie
-      const cookieStore = cookies()
-      cookieStore.set("admin_auth", email, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-
-      return { success: true, user: { email } }
-    } catch (timeoutError) {
-      clearTimeout(timeoutId)
-      if (timeoutError instanceof Error && timeoutError.name === "AbortError") {
-        console.error("[v0] Query timeout")
-        return { success: false, error: "Verification taking too long. Please try again." }
-      }
-      throw timeoutError
-    }
+    return { success: true, user: { email } }
   } catch (error) {
     console.error("[v0] Admin login error:", error)
     return { success: false, error: "Login failed. Please try again." }
