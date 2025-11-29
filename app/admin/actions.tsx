@@ -2,6 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
+import { cookies } from "next/headers"
 
 // Create admin client with service role key (bypasses RLS)
 function createAdminClient() {
@@ -745,8 +746,6 @@ export async function verifyAdminAndLogin(email: string, password: string) {
       throw new Error("Supabase configuration is missing")
     }
 
-    const { createClient } = await import("@supabase/supabase-js")
-    // Use SERVICE_ROLE_KEY instead of ANON_KEY for admin operations
     const supabase = createClient(url, serviceKey)
 
     // Query admin_users table with timeout
@@ -758,29 +757,33 @@ export async function verifyAdminAndLogin(email: string, password: string) {
         .from("admin_users")
         .select("email, password")
         .eq("email", email)
+        .eq("password", password) // Check password in query directly
         .single()
 
       clearTimeout(timeoutId)
 
       if (queryError || !adminUser) {
-        console.log("[v0] Admin user not found:", email)
-        return { success: false, error: "Invalid credentials" }
-      }
-
-      // Check if password matches (basic comparison for now)
-      // In production, use bcrypt for proper password hashing
-      if (adminUser.password && adminUser.password !== password) {
-        console.log("[v0] Invalid password for:", email)
-        return { success: false, error: "Invalid credentials" }
+        console.log("[v0] Invalid credentials for:", email)
+        return { success: false, error: "Invalid login credentials" }
       }
 
       console.log("[v0] Admin login successful for:", email)
+
+      // Set auth cookie
+      const cookieStore = cookies()
+      cookieStore.set("admin_auth", email, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+      })
+
       return { success: true, user: { email } }
     } catch (timeoutError) {
       clearTimeout(timeoutId)
       if (timeoutError instanceof Error && timeoutError.name === "AbortError") {
         console.error("[v0] Query timeout")
-        return { success: false, error: "Database query timeout" }
+        return { success: false, error: "Verification taking too long. Please try again." }
       }
       throw timeoutError
     }
