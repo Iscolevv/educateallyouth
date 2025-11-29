@@ -28,11 +28,11 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
 import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
 import { NewsEventsSection } from "@/components/news-events-section" // Import the new client-side NewsEventsSection component instead of rendering inline
-// Removed: unstable_noStore as noStore - This is no longer needed as we are using revalidate
+import { unstable_noStore as noStore } from "next/cache"
 import { HomepageWrapper } from "@/components/homepage-wrapper" // Assuming HomepageWrapper is correctly imported
 
-export const revalidate = 60 // Regenerate page every 60 seconds
-// Removed: dynamic, fetchCache - these were causing conflicts
+export const revalidate = 60
+export const dynamic = "force-static" // Changed from "force-dynamic"
 
 async function HomePageContent({
   projects,
@@ -1114,8 +1114,7 @@ async function HomePageContent({
 }
 
 async function HomePage() {
-  // Removed: noStore() - this was causing every request to hit database
-  // Instead, we'll use revalidate and let Next.js handle caching
+  noStore()
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseKey =
@@ -1129,9 +1128,6 @@ async function HomePage() {
   const supabase = await createClient()
 
   try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 second timeout
-
     const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, volunteerStoriesResult] =
       await Promise.all([
         supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
@@ -1149,7 +1145,7 @@ async function HomePage() {
           .eq("status", "approved")
           .order("created_at", { ascending: false })
           .limit(3),
-      ]).finally(() => clearTimeout(timeoutId))
+      ])
 
     const projects = projectsResult.data || []
     const testimonials = testimonialsResult.data || []
