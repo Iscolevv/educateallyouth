@@ -1,5 +1,6 @@
 "use server"
 
+import { createClient as createServerClient } from "@/lib/supabase/server"
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
@@ -738,18 +739,24 @@ export async function verifyAdminAndLogin(email: string, password: string) {
   try {
     console.log("[v0] Admin login attempt for:", email)
 
-    const supabase = createAdminClient()
+    // Use the server client which uses ANON_KEY but can still read admin_users table
+    const supabase = await createServerClient()
 
-    // Simple query - no timeouts, no AbortController
+    // Query admin_users table
     const { data: adminUser, error: queryError } = await supabase
       .from("admin_users")
-      .select("email, password")
+      .select("email")
       .eq("email", email)
       .eq("password", password)
       .single()
 
-    if (queryError || !adminUser) {
-      console.log("[v0] Invalid credentials for:", email)
+    if (queryError) {
+      console.log("[v0] Query error:", queryError.message)
+      return { success: false, error: "Invalid login credentials" }
+    }
+
+    if (!adminUser) {
+      console.log("[v0] No admin found for:", email)
       return { success: false, error: "Invalid login credentials" }
     }
 
