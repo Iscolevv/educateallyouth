@@ -32,7 +32,6 @@ import { unstable_noStore as noStore } from "next/cache"
 import { HomepageWrapper } from "@/components/homepage-wrapper" // Assuming HomepageWrapper is correctly imported
 
 export const revalidate = 60
-export const dynamic = "auto" // Changed from "force-dynamic"
 
 async function HomePageContent({
   projects,
