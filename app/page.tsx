@@ -605,8 +605,12 @@ async function HomePageContent({
             {/* Brian Onyango Card */}
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
-                <div className="flex flex-col items-center text-center">
-                  {/* CHANGE: Replace BO placeholder gradient with a professional headshot - update when photo is available */}
+                <div className="flex flex-col items-center text-center" itemScope itemType="https://schema.org/Person">
+                  <meta itemProp="name" content="Brian Onyango" />
+                  <meta itemProp="jobTitle" content="Founder & Executive Director" />
+                  <meta itemProp="email" content="brianonyango1605@gmail.com" />
+                  <meta itemProp="affiliation" content="EducateAll Youth Organization" />
+
                   <div className="w-32 h-32 rounded-full bg-gradient-to-br from-teal-600 to-teal-700 flex items-center justify-center text-white text-4xl font-bold mb-4">
                     BO
                   </div>
@@ -624,15 +628,21 @@ async function HomePageContent({
             {/* Levis Mokaya Card */}
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
-                <div className="flex flex-col items-center text-center">
+                <div className="flex flex-col items-center text-center" itemScope itemType="https://schema.org/Person">
+                  <meta itemProp="name" content="Levis Mokaya" />
+                  <meta itemProp="jobTitle" content="Project Manager & Developer" />
+                  <meta itemProp="affiliation" content="EducateAll Youth Organization" />
+                  <link itemProp="url" href="https://www.linkedin.com/in/levis-mokaya" />
+
                   <img
                     src="/images/img-20251127-081848.jpg"
-                    alt="Levis Mokaya"
+                    alt="Levis Mokaya - Project Manager & Developer at EducateAll Youth Organization"
+                    itemProp="image"
                     className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-orange-200"
                   />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Levis Mokaya</h3>
                   <p className="text-orange-600 font-semibold mb-4">Project Manager & Developer</p>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-gray-600 leading-relaxed" itemProp="description">
                     Levis Mokaya is a Data Science student at the University of Nairobi and serves as the Project
                     Manager and Developer for EducateAll Youth Organization. He leads the technical direction of the
                     organization, developing systems that connect volunteers, manage projects, and highlight the group's
@@ -645,15 +655,20 @@ async function HomePageContent({
             {/* Arsene Mwangi Card */}
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
-                <div className="flex flex-col items-center text-center">
+                <div className="flex flex-col items-center text-center" itemScope itemType="https://schema.org/Person">
+                  <meta itemProp="name" content="Arsene Mwangi" />
+                  <meta itemProp="jobTitle" content="Programs Coordinator" />
+                  <meta itemProp="affiliation" content="EducateAll Youth Organization" />
+
                   <img
                     src="/images/img-20251127-081905.jpg"
-                    alt="Arsene Mwangi"
+                    alt="Arsene Mwangi - Programs Coordinator at EducateAll Youth Organization"
+                    itemProp="image"
                     className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-purple-200"
                   />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Arsene Mwangi</h3>
                   <p className="text-purple-600 font-semibold mb-4">Programs Coordinator</p>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-gray-600 leading-relaxed" itemProp="description">
                     Arsene Mwangi is a Software Engineering student at the United States International University
                     (USIU–Africa) and serves as the Programs Coordinator at Educate All Youth Initiative. Passionate
                     about technology, education, and youth empowerment, Arsene plays a key role in coordinating outreach
@@ -667,15 +682,20 @@ async function HomePageContent({
             {/* Christabel Aloo Ochieng Card */}
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
-                <div className="flex flex-col items-center text-center">
+                <div className="flex flex-col items-center text-center" itemScope itemType="https://schema.org/Person">
+                  <meta itemProp="name" content="Christabel Aloo Ochieng" />
+                  <meta itemProp="jobTitle" content="Events & Mobilization Coordinator" />
+                  <meta itemProp="affiliation" content="EducateAll Youth Organization" />
+
                   <img
                     src="/images/img-20251127-082913.jpg"
-                    alt="Christabel Aloo Ochieng"
+                    alt="Christabel Aloo Ochieng - Events & Mobilization Coordinator at EducateAll Youth Organization"
+                    itemProp="image"
                     className="w-32 h-32 rounded-full object-cover border-4 border-pink-600 mb-4"
                   />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Christabel Aloo Ochieng</h3>
                   <p className="text-pink-600 font-semibold mb-4">Events & Mobilization Coordinator</p>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-gray-600 leading-relaxed" itemProp="description">
                     Christabel Aloo Ochieng is a Law student at Kisii University and serves as the Events & Mobilization
                     Coordinator at EducateAll Youth Initiative. A passionate advocate for political awareness,
                     leadership, and youth empowerment, Christabel plays a vital role in coordinating events and
