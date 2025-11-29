@@ -1114,9 +1114,6 @@ async function HomePageContent({
 }
 
 async function HomePage() {
-  // Removed: noStore() - this was causing every request to hit database
-  // Instead, we'll use revalidate and let Next.js handle caching
-
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
@@ -1129,33 +1126,43 @@ async function HomePage() {
   const supabase = await createClient()
 
   try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 second timeout
+    // This way, fast queries render immediately while slow ones fall back to empty data
 
-    const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, volunteerStoriesResult] =
-      await Promise.all([
-        supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
-        supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
-        supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8),
+    const queryWithTimeout = async (query: Promise<any>, timeoutMs = 2000) => {
+      return Promise.race([
+        query,
+        new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), timeoutMs)),
+      ])
+    }
+
+    const results = await Promise.allSettled([
+      queryWithTimeout(supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6)),
+      queryWithTimeout(supabase.from("testimonials").select("*").order("created_at", { ascending: false })),
+      queryWithTimeout(supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8)),
+      queryWithTimeout(
         supabase
           .from("news_events")
           .select("*")
           .eq("published", true)
           .order("event_date", { ascending: false })
           .limit(3),
+      ),
+      queryWithTimeout(
         supabase
           .from("volunteer_stories")
           .select("*")
           .eq("status", "approved")
           .order("created_at", { ascending: false })
           .limit(3),
-      ]).finally(() => clearTimeout(timeoutId))
+      ),
+    ])
 
-    const projects = projectsResult.data || []
-    const testimonials = testimonialsResult.data || []
-    const gallery = galleryResult.data || []
-    const newsEvents = newsEventsResult.data || []
-    const volunteerStories = volunteerStoriesResult.data || []
+    // Extract data from settled promises, defaulting to empty arrays if any fail or timeout
+    const projects = results[0].status === "fulfilled" ? results[0].value?.data || [] : []
+    const testimonials = results[1].status === "fulfilled" ? results[1].value?.data || [] : []
+    const gallery = results[2].status === "fulfilled" ? results[2].value?.data || [] : []
+    const newsEvents = results[3].status === "fulfilled" ? results[3].value?.data || [] : []
+    const volunteerStories = results[4].status === "fulfilled" ? results[4].value?.data || [] : []
 
     return (
       <HomepageWrapper>
