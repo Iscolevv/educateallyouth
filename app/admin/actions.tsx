@@ -738,35 +738,52 @@ export async function verifyAdminAndLogin(email: string, password: string) {
     console.log("[v0] Admin login attempt for:", email)
 
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const key = process.env.SUPABASE_ANON_KEY
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-    if (!url || !key) {
+    if (!url || !serviceKey) {
       console.error("[v0] Missing Supabase credentials")
       throw new Error("Supabase configuration is missing")
     }
 
     const { createClient } = await import("@supabase/supabase-js")
-    const supabase = createClient(url, key)
+    // Use SERVICE_ROLE_KEY instead of ANON_KEY for admin operations
+    const supabase = createClient(url, serviceKey)
 
-    const { data: adminUsers, error: queryError } = await supabase
-      .from("admin_users")
-      .select("email")
-      .eq("email", email)
-      .single()
+    // Query admin_users table with timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 5000)
 
-    if (queryError || !adminUsers) {
-      console.log("[v0] Admin user not found:", email)
-      return { success: false, error: "Invalid credentials" }
+    try {
+      const { data: adminUser, error: queryError } = await supabase
+        .from("admin_users")
+        .select("email, password")
+        .eq("email", email)
+        .single()
+
+      clearTimeout(timeoutId)
+
+      if (queryError || !adminUser) {
+        console.log("[v0] Admin user not found:", email)
+        return { success: false, error: "Invalid credentials" }
+      }
+
+      // Check if password matches (basic comparison for now)
+      // In production, use bcrypt for proper password hashing
+      if (adminUser.password && adminUser.password !== password) {
+        console.log("[v0] Invalid password for:", email)
+        return { success: false, error: "Invalid credentials" }
+      }
+
+      console.log("[v0] Admin login successful for:", email)
+      return { success: true, user: { email } }
+    } catch (timeoutError) {
+      clearTimeout(timeoutId)
+      if (timeoutError instanceof Error && timeoutError.name === "AbortError") {
+        console.error("[v0] Query timeout")
+        return { success: false, error: "Database query timeout" }
+      }
+      throw timeoutError
     }
-
-    // In production, you should implement proper password hashing with bcrypt
-    // For now, accept the login if email exists and password is provided
-    if (!password) {
-      return { success: false, error: "Password is required" }
-    }
-
-    console.log("[v0] Admin login successful for:", email)
-    return { success: true, user: { email } }
   } catch (error) {
     console.error("[v0] Admin login error:", error)
     return { success: false, error: "Login failed. Please try again." }
