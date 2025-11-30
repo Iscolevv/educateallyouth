@@ -9,19 +9,19 @@ export async function verifyAdminAndLogin(email: string, password: string) {
 
     const supabase = await createClient()
 
-    // Query admin_users table directly - check both email and password
+    // Also removed .toLowerCase() since we're doing case-insensitive comparison in the query
     const { data: adminUser, error: queryError } = await supabase
       .from("admin_users")
       .select("id, email")
-      .eq("email", email.toLowerCase())
+      .ilike("email", email) // ilike = case-insensitive like
       .eq("password", password)
-      .single()
+      .maybeSingle() // Returns null instead of error if no match
 
     console.log("[v0] Query result:", { data: adminUser, error: queryError?.message })
 
     if (queryError) {
       console.log("[v0] Query error:", queryError.message)
-      return { success: false, error: "Invalid login credentials" }
+      return { success: false, error: "Database error. Please try again." }
     }
 
     if (!adminUser) {
