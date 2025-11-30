@@ -34,6 +34,22 @@ import { HomepageWrapper } from "@/components/homepage-wrapper" // Assuming Home
 export const revalidate = 60 // Regenerate page every 60 seconds
 // Removed: dynamic, fetchCache - these were causing conflicts
 
+export const metadata = {
+  title: "EducateAll Youth Organization | Empowering Youth Through Education in Kenya",
+  description:
+    "EducateAll Youth Organization - Inspiring young leaders through education, volunteerism, and community service. Join us in transforming lives and building a brighter future.",
+  alternates: {
+    canonical: "https://educateallyouth.co.ke",
+  },
+  openGraph: {
+    title: "EducateAll Youth Organization | Empowering Youth Through Education",
+    description: "Inspiring young leaders through education, volunteerism, and community service.",
+    url: "https://educateallyouth.co.ke",
+    siteName: "EducateAll Youth Organization",
+    type: "website",
+  },
+}
+
 async function HomePageContent({
   projects,
   testimonials,
@@ -1133,48 +1149,31 @@ async function HomePageContent({
   )
 }
 
-async function HomePage() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-  const supabaseKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
-
-  if (!supabaseUrl || !supabaseKey) {
-    console.warn("[v0] Missing Supabase environment variables - using empty data")
-    return <HomePageContent projects={[]} testimonials={[]} gallery={[]} newsEvents={[]} volunteerStories={[]} />
-  }
-
+async function getData() {
   const supabase = await createClient()
 
+  const timeout = (ms: number) =>
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Query timeout")), ms))
+
   try {
-    // This way, fast queries render immediately while slow ones fall back to empty data
-
-    const queryWithTimeout = async (query: Promise<any>, timeoutMs = 2000) => {
-      return Promise.race([
-        query,
-        new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), timeoutMs)),
-      ])
-    }
-
     const results = await Promise.allSettled([
-      queryWithTimeout(supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6)),
-      queryWithTimeout(supabase.from("testimonials").select("*").order("created_at", { ascending: false })),
-      queryWithTimeout(supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8)),
-      queryWithTimeout(
-        supabase
-          .from("news_events")
-          .select("*")
-          .eq("published", true)
-          .order("event_date", { ascending: false })
-          .limit(3),
-      ),
-      queryWithTimeout(
-        supabase
-          .from("volunteer_stories")
-          .select("*")
-          .eq("status", "approved")
-          .order("created_at", { ascending: false })
-          .limit(3),
-      ),
+      Promise.race([
+        supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
+        timeout(5000),
+      ]),
+      Promise.race([supabase.from("testimonials").select("*").limit(10), timeout(5000)]),
+      Promise.race([
+        supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(12),
+        timeout(5000),
+      ]),
+      Promise.race([
+        supabase.from("news_events").select("*").order("date", { ascending: false }).limit(6),
+        timeout(5000),
+      ]),
+      Promise.race([
+        supabase.from("volunteer_stories").select("*").order("created_at", { ascending: false }).limit(4),
+        timeout(5000),
+      ]),
     ])
 
     // Extract data from settled promises, defaulting to empty arrays if any fail or timeout
@@ -1184,25 +1183,39 @@ async function HomePage() {
     const newsEvents = results[3].status === "fulfilled" ? results[3].value?.data || [] : []
     const volunteerStories = results[4].status === "fulfilled" ? results[4].value?.data || [] : []
 
-    return (
-      <HomepageWrapper>
-        <HomePageContent
-          projects={projects}
-          testimonials={testimonials}
-          gallery={gallery}
-          newsEvents={newsEvents}
-          volunteerStories={volunteerStories}
-        />
-      </HomepageWrapper>
-    )
+    return {
+      projects,
+      testimonials,
+      gallery,
+      newsEvents,
+      volunteerStories,
+    }
   } catch (error) {
     console.error("[v0] Error fetching homepage data:", error)
-    return (
-      <HomepageWrapper>
-        <HomePageContent projects={[]} testimonials={[]} gallery={[]} newsEvents={[]} volunteerStories={[]} />
-      </HomepageWrapper>
-    )
+    return {
+      projects: [],
+      testimonials: [],
+      gallery: [],
+      newsEvents: [],
+      volunteerStories: [],
+    }
   }
+}
+
+async function HomePage() {
+  const { projects, testimonials, gallery, newsEvents, volunteerStories } = await getData()
+
+  return (
+    <HomepageWrapper>
+      <HomePageContent
+        projects={projects}
+        testimonials={testimonials}
+        gallery={gallery}
+        newsEvents={newsEvents}
+        volunteerStories={volunteerStories}
+      />
+    </HomepageWrapper>
+  )
 }
 
 export default HomePage
