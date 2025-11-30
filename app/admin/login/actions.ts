@@ -9,13 +9,12 @@ export async function verifyAdminAndLogin(email: string, password: string) {
 
     const supabase = await createClient()
 
-    // Also removed .toLowerCase() since we're doing case-insensitive comparison in the query
     const { data: adminUser, error: queryError } = await supabase
       .from("admin_users")
       .select("id, email")
-      .ilike("email", email) // ilike = case-insensitive like
+      .eq("email", email.toLowerCase()) // Case-insensitive by converting to lowercase
       .eq("password", password)
-      .maybeSingle() // Returns null instead of error if no match
+      .maybeSingle()
 
     console.log("[v0] Query result:", { data: adminUser, error: queryError?.message })
 
@@ -31,7 +30,6 @@ export async function verifyAdminAndLogin(email: string, password: string) {
 
     console.log("[v0] Admin found, setting session for:", email)
 
-    // Set auth cookie
     const cookieStore = await cookies()
     cookieStore.set("admin_auth", adminUser.id, {
       httpOnly: true,
@@ -44,6 +42,8 @@ export async function verifyAdminAndLogin(email: string, password: string) {
     return { success: true }
   } catch (error) {
     console.error("[v0] Admin login error:", error)
+    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    console.error("[v0] Error details:", errorMessage)
     return { success: false, error: "Login failed. Please try again." }
   }
 }
