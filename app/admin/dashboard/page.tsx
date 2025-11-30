@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ProjectsManager from "@/components/admin/projects-manager"
@@ -12,19 +12,16 @@ import LearningPostsManager from "@/components/admin/learning-posts-manager"
 import CreativeSubmissionsManager from "@/components/admin/creative-submissions-manager"
 
 export default async function AdminDashboard() {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const adminAuth = cookieStore.get("admin_auth")
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
+  if (!adminAuth) {
     redirect("/admin/login")
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AdminHeader userEmail={user.email || ""} />
+      <AdminHeader userEmail={""} />
 
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
