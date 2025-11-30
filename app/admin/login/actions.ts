@@ -9,10 +9,11 @@ export async function verifyAdminAndLogin(email: string, password: string) {
 
     const supabase = await createClient()
 
+    // The database stores emails in their original case
     const { data: adminUser, error: queryError } = await supabase
       .from("admin_users")
       .select("id, email")
-      .eq("email", email.toLowerCase()) // Case-insensitive by converting to lowercase
+      .eq("email", email) // Exact match without case conversion
       .eq("password", password)
       .maybeSingle()
 
