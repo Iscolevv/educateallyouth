@@ -154,7 +154,16 @@ export default function ShowcaseClient({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredSubmissions.map((submission) => (
                 <Card key={submission.id} className="hover:shadow-lg transition-shadow">
-                  {submission.image_url ? (
+                  {submission.video_url ? (
+                    <div className="aspect-video w-full overflow-hidden bg-slate-200">
+                      <video
+                        src={submission.video_url}
+                        controls
+                        className="w-full h-full object-cover"
+                        preload="metadata"
+                      />
+                    </div>
+                  ) : submission.image_url ? (
                     <div className="aspect-video w-full overflow-hidden bg-slate-200">
                       <img
                         src={submission.image_url || "/placeholder.svg"}
@@ -239,7 +248,14 @@ export default function ShowcaseClient({
                   <DialogDescription>{selectedPost.category}</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
-                  {selectedPost.image_url ? (
+                  {selectedPost.video_url ? (
+                    <video
+                      src={selectedPost.video_url}
+                      controls
+                      className="w-full h-auto rounded-lg"
+                      preload="metadata"
+                    />
+                  ) : selectedPost.image_url ? (
                     <img
                       src={selectedPost.image_url || "/placeholder.svg"}
                       alt={selectedPost.title}

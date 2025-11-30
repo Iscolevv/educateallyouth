@@ -24,10 +24,6 @@ export const metadata: Metadata = {
     "Kenyan youth",
     "volunteer opportunities",
     "leadership development",
-    "Brian Onyango",
-    "Levis Mokaya",
-    "Arsene Mwangi",
-    "Christabel Aloo",
   ],
   authors: [{ name: "EducateAll Youth Organization" }],
   creator: "EducateAll Youth Organization",
@@ -37,7 +33,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://educateallyouth.co.ke"),
+  metadataBase: new URL("https://educateallyouthorg.co.ke"),
   alternates: {
     canonical: "/",
   },
@@ -45,14 +41,14 @@ export const metadata: Metadata = {
     title: "EducateAll Youth Organization | Empowering Youth Through Education",
     description:
       "Inspiring young leaders through education, volunteerism, and community service. Join us in transforming lives across Kenya.",
-    url: "https://educateallyouth.co.ke",
+    url: "https://educateallyouthorg.co.ke",
     siteName: "EducateAll Youth Organization",
     images: [
       {
-        url: "/ea-logo.svg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "EducateAll Youth Organization Logo",
+        alt: "EducateAll Youth Organization",
       },
     ],
     locale: "en_KE",
@@ -62,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "EducateAll Youth Organization | Empowering Youth Through Education",
     description: "Inspiring young leaders through education, volunteerism, and community service in Kenya.",
-    images: ["/ea-logo.svg"],
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -77,12 +73,26 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/ea-logo.svg", type: "image/svg+xml" },
-      { url: "/ea-logo.svg", sizes: "16x16", type: "image/svg+xml" },
-      { url: "/ea-logo.svg", sizes: "32x32", type: "image/svg+xml" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-16x16.jpg", sizes: "16x16", type: "image/jpeg" },
+      { url: "/favicon-32x32.jpg", sizes: "32x32", type: "image/jpeg" },
+      { url: "/favicon.ico", sizes: "32x32", type: "image/x-icon" },
     ],
-    apple: [{ url: "/ea-logo.svg", sizes: "180x180", type: "image/svg+xml" }],
-    shortcut: "/ea-logo.svg",
+    apple: [
+      { url: "/apple-touch-icon.jpg", sizes: "180x180", type: "image/jpeg" },
+      { url: "/apple-icon.jpg", sizes: "192x192", type: "image/jpeg" },
+    ],
+    shortcut: "/favicon.ico",
+    other: [
+      {
+        rel: "android-chrome",
+        url: "/android-chrome-192x192.jpg",
+      },
+      {
+        rel: "android-chrome",
+        url: "/android-chrome-512x512.jpg",
+      },
+    ],
   },
   manifest: "/site.webmanifest",
   generator: "v0.app",
@@ -104,84 +114,33 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "EducateAll Youth Organization",
-              alternateName: "EducateAll Youth",
-              url: "https://educateallyouth.co.ke",
-              logo: "https://educateallyouth.co.ke/ea-logo.svg",
-              image: "https://educateallyouth.co.ke/ea-logo.svg",
+              url: "https://educateallyouthorg.co.ke",
+              logo: "https://educateallyouthorg.co.ke/favicon.svg",
               description:
-                "EducateAll Youth Organization is a non-profit dedicated to inspiring young leaders through education, volunteerism, and community service in Kenya.",
-              foundingDate: "2021-10-04",
+                "EducateAll Youth Organization is a non-profit dedicated to inspiring young leaders through education, volunteerism, and community service.",
               founder: {
                 "@type": "Person",
                 name: "Brian Onyango",
-                jobTitle: "Founder & Executive Director",
-                email: "brianonyango1605@gmail.com",
-                affiliation: {
-                  "@type": "Organization",
-                  name: "EducateAll Youth Organization",
-                },
               },
-              employee: [
-                {
-                  "@type": "Person",
-                  name: "Levis Mokaya",
-                  jobTitle: "Project Manager & Developer",
-                  image: "https://educateallyouth.co.ke/images/img-20251127-081848.jpg",
-                  url: "https://www.linkedin.com/in/levis-mokaya",
-                  description:
-                    "Data Science student at the University of Nairobi, leads technical direction and development",
-                  affiliation: {
-                    "@type": "Organization",
-                    name: "EducateAll Youth Organization",
-                  },
-                  alumniOf: {
-                    "@type": "EducationalOrganization",
-                    name: "University of Nairobi",
-                  },
-                },
-                {
-                  "@type": "Person",
-                  name: "Arsene Mwangi",
-                  jobTitle: "Programs Coordinator",
-                  image: "https://educateallyouth.co.ke/images/img-20251127-081905.jpg",
-                  description:
-                    "Software Engineering student at USIU–Africa, coordinates outreach programs and school partnerships",
-                  affiliation: {
-                    "@type": "Organization",
-                    name: "EducateAll Youth Organization",
-                  },
-                  alumniOf: {
-                    "@type": "EducationalOrganization",
-                    name: "United States International University Africa",
-                  },
-                },
-                {
-                  "@type": "Person",
-                  name: "Christabel Aloo Ochieng",
-                  jobTitle: "Events & Mobilization Coordinator",
-                  image: "https://educateallyouth.co.ke/images/img-20251127-082913.jpg",
-                  description: "Law student at Kisii University, coordinates events and community mobilization",
-                  affiliation: {
-                    "@type": "Organization",
-                    name: "EducateAll Youth Organization",
-                  },
-                  alumniOf: {
-                    "@type": "EducationalOrganization",
-                    name: "Kisii University",
-                  },
-                },
+              developer: {
+                "@type": "Person",
+                name: "Levis Mokaya",
+                url: "https://www.linkedin.com/in/levis-mokaya",
+                description: "Full-stack developer and technical lead",
+              },
+              sameAs: [
+                "https://www.linkedin.com/in/brian-o-12647a323",
+                "https://www.instagram.com/isco_levv",
+                "https://wa.me/254756288563",
               ],
-              sameAs: ["https://www.linkedin.com/in/brian-o-12647a323", "https://www.instagram.com/isco_levv"],
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "Customer Service",
                 telephone: "+254756288563",
-                email: "educateallyouthorganization@gmail.com",
+                email: "brianonyango1605@gmail.com",
               },
-              areaServed: {
-                "@type": "Country",
-                name: "Kenya",
-              },
+              areaServed: "Kenya",
+              foundingDate: "2021-10-04",
             }),
           }}
         />

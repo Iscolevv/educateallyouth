@@ -1,7 +1,7 @@
 "use server"
+
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
-import { cookies } from "next/headers"
 
 // Create admin client with service role key (bypasses RLS)
 function createAdminClient() {
@@ -540,7 +540,7 @@ export async function deleteCreativeSubmission(id: string) {
 
     if (error) {
       console.error("[v0] Supabase error deleting creative submission:", error)
-      throw new Error("Failed to delete creative submission")
+      throw new Error(error.message || "Failed to delete creative submission")
     }
 
     console.log("[v0] Creative submission deleted successfully")
@@ -729,48 +729,5 @@ async function sendApprovalEmail(
     console.error("[v0] ========================================")
     // Don't throw - we don't want the approval to fail if email fails
     return false
-  }
-}
-
-// Admin authentication actions
-export async function verifyAdminAndLogin(email: string, password: string) {
-  try {
-    console.log("[v0] Admin login attempt for:", email)
-
-    const supabase = createAdminClient()
-
-    // Query admin_users table
-    const { data: adminUser, error: queryError } = await supabase
-      .from("admin_users")
-      .select("email")
-      .eq("email", email)
-      .eq("password", password)
-      .single()
-
-    if (queryError) {
-      console.log("[v0] Query error:", queryError.message)
-      return { success: false, error: "Invalid login credentials" }
-    }
-
-    if (!adminUser) {
-      console.log("[v0] No admin found for:", email)
-      return { success: false, error: "Invalid login credentials" }
-    }
-
-    console.log("[v0] Admin login successful for:", email)
-
-    // Set auth cookie
-    const cookieStore = await cookies()
-    cookieStore.set("admin_auth", email, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    })
-
-    return { success: true, user: { email } }
-  } catch (error) {
-    console.error("[v0] Admin login error:", error)
-    return { success: false, error: "Login failed. Please try again." }
   }
 }

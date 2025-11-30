@@ -8,6 +8,10 @@ export async function createClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("[v0] Supabase environment variables missing:", {
+      url: !!supabaseUrl,
+      key: !!supabaseAnonKey,
+    })
     throw new Error("Supabase configuration missing")
   }
 
@@ -20,8 +24,18 @@ export async function createClient() {
         try {
           cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
         } catch {
-          // Ignore errors from Server Components
+          // The "setAll" method was called from a Server Component.
+          // This can be ignored if you have middleware refreshing
+          // user sessions.
         }
+      },
+    },
+    db: {
+      schema: "public",
+    },
+    global: {
+      headers: {
+        "cache-control": "no-cache, no-store, must-revalidate",
       },
     },
   })
