@@ -36,7 +36,6 @@ function LoginForm() {
       }
 
       console.log("[v0] Login successful, redirecting...")
-      await new Promise((resolve) => setTimeout(resolve, 500))
       router.push("/admin/dashboard")
     } catch (error: unknown) {
       console.error("[v0] Login catch error:", error)

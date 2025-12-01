@@ -1159,20 +1159,20 @@ async function getData() {
     const results = await Promise.allSettled([
       Promise.race([
         supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
-        timeout(10000), // Increased timeout to 10 seconds for slower mobile connections
+        timeout(30000), // Increased to 30 seconds for mobile networks
       ]),
-      Promise.race([supabase.from("testimonials").select("*").limit(10), timeout(10000)]), // Increased timeout to 10 seconds
+      Promise.race([supabase.from("testimonials").select("*").limit(10), timeout(30000)]),
       Promise.race([
         supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(12),
-        timeout(10000), // Increased timeout to 10 seconds
+        timeout(30000), // Increased to 30 seconds for mobile networks
       ]),
       Promise.race([
         supabase.from("news_events").select("*").order("date", { ascending: false }).limit(6),
-        timeout(10000), // Increased timeout to 10 seconds
+        timeout(30000), // Increased to 30 seconds for mobile networks
       ]),
       Promise.race([
         supabase.from("volunteer_stories").select("*").order("created_at", { ascending: false }).limit(4),
-        timeout(10000), // Increased timeout to 10 seconds
+        timeout(30000), // Increased to 30 seconds for mobile networks
       ]),
     ])
 
