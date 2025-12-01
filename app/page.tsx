@@ -31,7 +31,7 @@ import { NewsEventsSection } from "@/components/news-events-section" // Import t
 // Removed: unstable_noStore as noStore - This is no longer needed as we are using revalidate
 import { HomepageWrapper } from "@/components/homepage-wrapper" // Assuming HomepageWrapper is correctly imported
 
-export const revalidate = 60 // Regenerate page every 60 seconds
+export const revalidate = 30 // Regenerate cached data every 30 seconds
 // Removed: dynamic, fetchCache - these were causing conflicts
 
 export const metadata = {
@@ -1152,43 +1152,22 @@ async function HomePageContent({
 async function getData() {
   const supabase = await createClient()
 
-  const timeout = (ms: number) =>
-    new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Query timeout")), ms))
-
   try {
-    const results = await Promise.allSettled([
-      Promise.race([
-        supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
-        timeout(30000), // Increased to 30 seconds for mobile networks
-      ]),
-      Promise.race([supabase.from("testimonials").select("*").limit(10), timeout(30000)]),
-      Promise.race([
-        supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(12),
-        timeout(30000), // Increased to 30 seconds for mobile networks
-      ]),
-      Promise.race([
-        supabase.from("news_events").select("*").order("date", { ascending: false }).limit(6),
-        timeout(30000), // Increased to 30 seconds for mobile networks
-      ]),
-      Promise.race([
-        supabase.from("volunteer_stories").select("*").order("created_at", { ascending: false }).limit(4),
-        timeout(30000), // Increased to 30 seconds for mobile networks
-      ]),
+    // Fetch all data with reasonable timeouts
+    const [projectsRes, testimonialsRes, galleryRes, newsEventsRes, volunteerStoriesRes] = await Promise.all([
+      supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
+      supabase.from("testimonials").select("*").limit(10),
+      supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(12),
+      supabase.from("news_events").select("*").order("date", { ascending: false }).limit(6),
+      supabase.from("volunteer_stories").select("*").order("created_at", { ascending: false }).limit(4),
     ])
 
-    // Extract data from settled promises, defaulting to empty arrays if any fail or timeout
-    const projects = results[0].status === "fulfilled" ? results[0].value?.data || [] : []
-    const testimonials = results[1].status === "fulfilled" ? results[1].value?.data || [] : []
-    const gallery = results[2].status === "fulfilled" ? results[2].value?.data || [] : []
-    const newsEvents = results[3].status === "fulfilled" ? results[3].value?.data || [] : []
-    const volunteerStories = results[4].status === "fulfilled" ? results[4].value?.data || [] : []
-
     return {
-      projects,
-      testimonials,
-      gallery,
-      newsEvents,
-      volunteerStories,
+      projects: projectsRes.data || [],
+      testimonials: testimonialsRes.data || [],
+      gallery: galleryRes.data || [],
+      newsEvents: newsEventsRes.data || [],
+      volunteerStories: volunteerStoriesRes.data || [],
     }
   } catch (error) {
     console.error("[v0] Error fetching homepage data:", error)

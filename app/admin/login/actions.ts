@@ -21,7 +21,7 @@ export async function verifyAdminAndLogin(email: string, password: string) {
       return { success: false, error: "Invalid login credentials" }
     }
 
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     cookieStore.set("admin_auth", adminUser.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -32,6 +32,7 @@ export async function verifyAdminAndLogin(email: string, password: string) {
 
     return { success: true }
   } catch (error) {
+    console.error("[v0] Login error:", error)
     return { success: false, error: "Login failed" }
   }
 }
