@@ -1,12 +1,4 @@
 import type { Metadata } from "next"
-import { Hero } from "@/components/hero"
-import { ProjectsSection } from "@/components/projects-section"
-import { NewsEventsSection } from "@/components/news-events-section"
-import { TestimonialsSection } from "@/components/testimonials-section"
-import { GallerySection } from "@/components/gallery-section"
-import { VolunteersSection } from "@/components/volunteers-section"
-import { ContactSection } from "@/components/contact-section"
-import { Footer } from "@/components/footer"
 
 export const revalidate = 30
 
@@ -22,14 +14,10 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-background">
-      <Hero />
-      <ProjectsSection />
-      <NewsEventsSection />
-      <TestimonialsSection />
-      <GallerySection />
-      <VolunteersSection />
-      <ContactSection />
-      <Footer />
+      <div className="container mx-auto px-4 py-20">
+        <h1 className="text-4xl font-bold mb-4">EducateAll Youth Organization</h1>
+        <p className="text-lg text-muted-foreground">Empowering Youth Through Education in Kenya</p>
+      </div>
     </main>
   )
 }
