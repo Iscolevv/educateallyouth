@@ -1,4 +1,6 @@
 "use server"
+
+import { createClient as createServerClient } from "@/lib/supabase/server"
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
@@ -737,7 +739,8 @@ export async function verifyAdminAndLogin(email: string, password: string) {
   try {
     console.log("[v0] Admin login attempt for:", email)
 
-    const supabase = createAdminClient()
+    // Use the server client which uses ANON_KEY but can still read admin_users table
+    const supabase = await createServerClient()
 
     // Query admin_users table
     const { data: adminUser, error: queryError } = await supabase

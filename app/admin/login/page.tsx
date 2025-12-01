@@ -25,21 +25,23 @@ function LoginForm() {
     setError(null)
 
     try {
-      console.log("[v0] Starting login with email:", email)
       const result = await verifyAdminAndLogin(email, password)
-      console.log("[v0] Login result:", result)
 
       if (!result.success) {
-        setError(result.error || "Invalid credentials")
-        setIsLoading(false)
-        return
+        const errorMsg = result.error || "Invalid credentials"
+        // Check if it's a timeout error
+        if (errorMsg.includes("timeout")) {
+          setError("Database is temporarily busy. Please try again in a moment.")
+        } else {
+          setError(errorMsg)
+        }
+      } else {
+        router.push("/admin/dashboard")
       }
-
-      console.log("[v0] Login successful, redirecting...")
-      router.push("/admin/dashboard")
     } catch (error: unknown) {
-      console.error("[v0] Login catch error:", error)
-      setError(error instanceof Error ? error.message : "An error occurred")
+      const errorMsg = error instanceof Error ? error.message : "An error occurred"
+      setError(errorMsg.includes("timeout") ? "Connection timeout. Please try again." : errorMsg)
+    } finally {
       setIsLoading(false)
     }
   }
