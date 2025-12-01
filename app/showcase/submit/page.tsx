@@ -16,7 +16,6 @@ const CREATIVE_CATEGORIES = ["Poems", "Art", "Spoken Art", "Short Stories"]
 export default function SubmitPage() {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const videoInputRef = useRef<HTMLInputElement>(null)
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -27,12 +26,10 @@ export default function SubmitPage() {
     author_instagram: "",
     category: "Poems",
     image_url: "",
-    video_url: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
-  const [uploadedVideo, setUploadedVideo] = useState<string | null>(null)
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -59,67 +56,6 @@ export default function SubmitPage() {
     }
   }
 
-  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    if (!file.type.startsWith("video/")) {
-      setError("Please upload a valid video file")
-      return
-    }
-
-    const maxSize = 50 * 1024 * 1024 // 50MB
-    if (file.size > maxSize) {
-      setError("Video file is too large. Maximum size is 50MB.")
-      return
-    }
-
-    try {
-      setIsSubmitting(true)
-      setError(null)
-
-      const video = document.createElement("video")
-      const objectUrl = URL.createObjectURL(file)
-
-      video.preload = "metadata"
-      video.onloadedmetadata = () => {
-        URL.revokeObjectURL(objectUrl)
-
-        if (video.duration > 90) {
-          setError("Video must be 90 seconds or less. Your video is " + Math.round(video.duration) + " seconds.")
-          setIsSubmitting(false)
-          return
-        }
-
-        const reader = new FileReader()
-        reader.onload = (event) => {
-          const base64String = event.target?.result as string
-          setUploadedVideo(base64String)
-          setFormData({ ...formData, video_url: base64String })
-          setError(null)
-          setIsSubmitting(false)
-        }
-        reader.onerror = () => {
-          setError("Failed to read video file")
-          setIsSubmitting(false)
-        }
-        reader.readAsDataURL(file)
-      }
-
-      video.onerror = () => {
-        setError("Failed to load video file")
-        URL.revokeObjectURL(objectUrl)
-        setIsSubmitting(false)
-      }
-
-      video.src = objectUrl
-    } catch (err) {
-      console.error("Error processing video:", err)
-      setError(err instanceof Error ? err.message : "Failed to process video")
-      setIsSubmitting(false)
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -138,7 +74,6 @@ export default function SubmitPage() {
         author_instagram: formData.author_instagram,
         category: formData.category,
         image_url: formData.image_url,
-        video_url: formData.video_url,
         published: false,
       })
 
@@ -297,43 +232,6 @@ export default function SubmitPage() {
                   className="mt-1"
                 />
               </div>
-
-              {formData.category === "Art" && (
-                <div>
-                  <label className="block text-sm font-semibold mb-2">Video (Optional - Art Only)</label>
-                  <p className="text-xs text-gray-600 mb-2">Upload a video of your art (max 90 seconds)</p>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => videoInputRef.current?.click()}
-                      className="flex-1"
-                      disabled={isSubmitting}
-                    >
-                      {uploadedVideo ? "✓ Video Uploaded" : "Upload Video from Device"}
-                    </Button>
-                    <input
-                      ref={videoInputRef}
-                      type="file"
-                      accept="video/*"
-                      onChange={handleVideoUpload}
-                      className="hidden"
-                    />
-                  </div>
-                  {uploadedVideo && (
-                    <div className="mt-2 p-2 bg-teal-50 rounded text-sm text-teal-700">
-                      Video uploaded successfully (max 90 seconds)
-                    </div>
-                  )}
-                  <p className="text-xs text-gray-500 mt-2">Or paste video URL:</p>
-                  <Input
-                    value={formData.video_url}
-                    onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-                    placeholder="https://example.com/video.mp4"
-                    className="mt-1"
-                  />
-                </div>
-              )}
 
               <div className="flex gap-4">
                 <Button

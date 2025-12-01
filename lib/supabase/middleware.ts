@@ -9,9 +9,7 @@ export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
 
-  // If environment variables are missing, return response without auth check
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn("[v0] Missing Supabase environment variables - skipping auth middleware")
     return supabaseResponse
   }
 
@@ -30,12 +28,11 @@ export async function updateSession(request: NextRequest) {
     },
   })
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // Protect admin routes - only check if user is logged in
   if (request.nextUrl.pathname.startsWith("/admin") && !request.nextUrl.pathname.startsWith("/admin/login")) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
     if (!user) {
       const url = request.nextUrl.clone()
       url.pathname = "/admin/login"

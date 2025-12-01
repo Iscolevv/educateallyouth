@@ -28,12 +28,19 @@ function LoginForm() {
       const result = await verifyAdminAndLogin(email, password)
 
       if (!result.success) {
-        setError(result.error)
+        const errorMsg = result.error || "Invalid credentials"
+        // Check if it's a timeout error
+        if (errorMsg.includes("timeout")) {
+          setError("Database is temporarily busy. Please try again in a moment.")
+        } else {
+          setError(errorMsg)
+        }
       } else {
         router.push("/admin/dashboard")
       }
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred")
+      const errorMsg = error instanceof Error ? error.message : "An error occurred"
+      setError(errorMsg.includes("timeout") ? "Connection timeout. Please try again." : errorMsg)
     } finally {
       setIsLoading(false)
     }

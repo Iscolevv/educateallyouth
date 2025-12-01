@@ -1,30 +1,41 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { cookies } from "next/headers"
+
+const AUTHORIZED_ADMINS = [
+  { email: "brianonyango1605@gmail.com", password: "eayo2025", id: "admin1" },
+  { email: "mwangiarsene6@gmail.com", password: "eayo2025", id: "admin2" },
+  { email: "christabelaloo28@gmail.com", password: "eayo2025", id: "admin3" },
+  { email: "levismokaya220@gmail.com", password: "eayo2025", id: "admin4" },
+  { email: "educateallyouthorganization@gmail.com", password: "eayo2025", id: "admin5" },
+]
 
 export async function verifyAdminAndLogin(email: string, password: string) {
-  const supabase = await createClient()
+  try {
+    console.log("[v0] Login attempt:", email)
 
-  // Check if email exists in admin_users table
-  const { data: adminUser, error: queryError } = await supabase
-    .from("admin_users")
-    .select("email")
-    .eq("email", email.toLowerCase())
-    .single()
+    const adminUser = AUTHORIZED_ADMINS.find((admin) => admin.email === email && admin.password === password)
 
-  if (queryError || !adminUser) {
-    return { success: false, error: "You are not authorized to access the admin panel" }
+    if (!adminUser) {
+      console.log("[v0] Admin not found for email:", email)
+      return { success: false, error: "Invalid login credentials" }
+    }
+
+    console.log("[v0] Admin found, setting cookie for:", adminUser.email)
+
+    const cookieStore = await cookies()
+    cookieStore.set("admin_auth", adminUser.id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    })
+
+    console.log("[v0] Cookie set successfully, login complete")
+    return { success: true }
+  } catch (error) {
+    console.error("[v0] Login error:", error)
+    return { success: false, error: "Login failed. Please try again." }
   }
-
-  // Sign in with Supabase Auth
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-
-  if (authError) {
-    return { success: false, error: "Invalid login credentials" }
-  }
-
-  return { success: true }
 }
