@@ -28,11 +28,11 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import TeamCarousel from "@/components/TeamCarousel" // Assuming TeamCarousel is in components/TeamCarousel.tsx
 import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Added import
 import { NewsEventsSection } from "@/components/news-events-section" // Import the new client-side NewsEventsSection component instead of rendering inline
-// Removed: unstable_noStore as noStore - This is no longer needed as we are using revalidate
+import { unstable_noStore as noStore } from "next/cache"
 import { HomepageWrapper } from "@/components/homepage-wrapper" // Assuming HomepageWrapper is correctly imported
 
-export const revalidate = 60 // Regenerate page every 60 seconds
-// Removed: dynamic, fetchCache - these were causing conflicts
+export const revalidate = 60
+export const dynamic = "force-static" // Changed from "force-dynamic"
 
 async function HomePageContent({
   projects,
@@ -605,12 +605,8 @@ async function HomePageContent({
             {/* Brian Onyango Card */}
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
-                <div className="flex flex-col items-center text-center" itemScope itemType="https://schema.org/Person">
-                  <meta itemProp="name" content="Brian Onyango" />
-                  <meta itemProp="jobTitle" content="Founder & Executive Director" />
-                  <meta itemProp="email" content="brianonyango1605@gmail.com" />
-                  <meta itemProp="affiliation" content="EducateAll Youth Organization" />
-
+                <div className="flex flex-col items-center text-center">
+                  {/* CHANGE: Replace BO placeholder gradient with a professional headshot - update when photo is available */}
                   <div className="w-32 h-32 rounded-full bg-gradient-to-br from-teal-600 to-teal-700 flex items-center justify-center text-white text-4xl font-bold mb-4">
                     BO
                   </div>
@@ -628,21 +624,15 @@ async function HomePageContent({
             {/* Levis Mokaya Card */}
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
-                <div className="flex flex-col items-center text-center" itemScope itemType="https://schema.org/Person">
-                  <meta itemProp="name" content="Levis Mokaya" />
-                  <meta itemProp="jobTitle" content="Project Manager & Developer" />
-                  <meta itemProp="affiliation" content="EducateAll Youth Organization" />
-                  <link itemProp="url" href="https://www.linkedin.com/in/levis-mokaya" />
-
+                <div className="flex flex-col items-center text-center">
                   <img
                     src="/images/img-20251127-081848.jpg"
-                    alt="Levis Mokaya - Project Manager & Developer at EducateAll Youth Organization"
-                    itemProp="image"
+                    alt="Levis Mokaya"
                     className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-orange-200"
                   />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Levis Mokaya</h3>
                   <p className="text-orange-600 font-semibold mb-4">Project Manager & Developer</p>
-                  <p className="text-gray-600 leading-relaxed" itemProp="description">
+                  <p className="text-gray-600 leading-relaxed">
                     Levis Mokaya is a Data Science student at the University of Nairobi and serves as the Project
                     Manager and Developer for EducateAll Youth Organization. He leads the technical direction of the
                     organization, developing systems that connect volunteers, manage projects, and highlight the group's
@@ -655,20 +645,15 @@ async function HomePageContent({
             {/* Arsene Mwangi Card */}
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
-                <div className="flex flex-col items-center text-center" itemScope itemType="https://schema.org/Person">
-                  <meta itemProp="name" content="Arsene Mwangi" />
-                  <meta itemProp="jobTitle" content="Programs Coordinator" />
-                  <meta itemProp="affiliation" content="EducateAll Youth Organization" />
-
+                <div className="flex flex-col items-center text-center">
                   <img
                     src="/images/img-20251127-081905.jpg"
-                    alt="Arsene Mwangi - Programs Coordinator at EducateAll Youth Organization"
-                    itemProp="image"
+                    alt="Arsene Mwangi"
                     className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-purple-200"
                   />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Arsene Mwangi</h3>
                   <p className="text-purple-600 font-semibold mb-4">Programs Coordinator</p>
-                  <p className="text-gray-600 leading-relaxed" itemProp="description">
+                  <p className="text-gray-600 leading-relaxed">
                     Arsene Mwangi is a Software Engineering student at the United States International University
                     (USIU–Africa) and serves as the Programs Coordinator at Educate All Youth Initiative. Passionate
                     about technology, education, and youth empowerment, Arsene plays a key role in coordinating outreach
@@ -682,20 +667,15 @@ async function HomePageContent({
             {/* Christabel Aloo Ochieng Card */}
             <Card className="overflow-hidden hover:shadow-xl transition-shadow fade-in-up">
               <CardContent className="p-8">
-                <div className="flex flex-col items-center text-center" itemScope itemType="https://schema.org/Person">
-                  <meta itemProp="name" content="Christabel Aloo Ochieng" />
-                  <meta itemProp="jobTitle" content="Events & Mobilization Coordinator" />
-                  <meta itemProp="affiliation" content="EducateAll Youth Organization" />
-
+                <div className="flex flex-col items-center text-center">
                   <img
                     src="/images/img-20251127-082913.jpg"
-                    alt="Christabel Aloo Ochieng - Events & Mobilization Coordinator at EducateAll Youth Organization"
-                    itemProp="image"
+                    alt="Christabel Aloo Ochieng"
                     className="w-32 h-32 rounded-full object-cover border-4 border-pink-600 mb-4"
                   />
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Christabel Aloo Ochieng</h3>
                   <p className="text-pink-600 font-semibold mb-4">Events & Mobilization Coordinator</p>
-                  <p className="text-gray-600 leading-relaxed" itemProp="description">
+                  <p className="text-gray-600 leading-relaxed">
                     Christabel Aloo Ochieng is a Law student at Kisii University and serves as the Events & Mobilization
                     Coordinator at EducateAll Youth Initiative. A passionate advocate for political awareness,
                     leadership, and youth empowerment, Christabel plays a vital role in coordinating events and
@@ -1134,6 +1114,8 @@ async function HomePageContent({
 }
 
 async function HomePage() {
+  noStore()
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
@@ -1146,43 +1128,30 @@ async function HomePage() {
   const supabase = await createClient()
 
   try {
-    // This way, fast queries render immediately while slow ones fall back to empty data
-
-    const queryWithTimeout = async (query: Promise<any>, timeoutMs = 2000) => {
-      return Promise.race([
-        query,
-        new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), timeoutMs)),
-      ])
-    }
-
-    const results = await Promise.allSettled([
-      queryWithTimeout(supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6)),
-      queryWithTimeout(supabase.from("testimonials").select("*").order("created_at", { ascending: false })),
-      queryWithTimeout(supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8)),
-      queryWithTimeout(
+    const [projectsResult, testimonialsResult, galleryResult, newsEventsResult, volunteerStoriesResult] =
+      await Promise.all([
+        supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(6),
+        supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
+        supabase.from("gallery").select("*").order("created_at", { ascending: false }).limit(8),
         supabase
           .from("news_events")
           .select("*")
           .eq("published", true)
           .order("event_date", { ascending: false })
           .limit(3),
-      ),
-      queryWithTimeout(
         supabase
           .from("volunteer_stories")
           .select("*")
           .eq("status", "approved")
           .order("created_at", { ascending: false })
           .limit(3),
-      ),
-    ])
+      ])
 
-    // Extract data from settled promises, defaulting to empty arrays if any fail or timeout
-    const projects = results[0].status === "fulfilled" ? results[0].value?.data || [] : []
-    const testimonials = results[1].status === "fulfilled" ? results[1].value?.data || [] : []
-    const gallery = results[2].status === "fulfilled" ? results[2].value?.data || [] : []
-    const newsEvents = results[3].status === "fulfilled" ? results[3].value?.data || [] : []
-    const volunteerStories = results[4].status === "fulfilled" ? results[4].value?.data || [] : []
+    const projects = projectsResult.data || []
+    const testimonials = testimonialsResult.data || []
+    const gallery = galleryResult.data || []
+    const newsEvents = newsEventsResult.data || []
+    const volunteerStories = volunteerStoriesResult.data || []
 
     return (
       <HomepageWrapper>

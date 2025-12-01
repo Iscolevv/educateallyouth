@@ -1,9 +1,7 @@
 "use server"
 
-import { createClient as createServerClient } from "@/lib/supabase/server"
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
-import { cookies } from "next/headers"
 
 // Create admin client with service role key (bypasses RLS)
 function createAdminClient() {
@@ -737,43 +735,28 @@ async function sendApprovalEmail(
 // Admin authentication actions
 export async function verifyAdminAndLogin(email: string, password: string) {
   try {
-    console.log("[v0] Admin login attempt for:", email)
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_ANON_KEY
 
-    // Use the server client which uses ANON_KEY but can still read admin_users table
-    const supabase = await createServerClient()
-
-    // Query admin_users table
-    const { data: adminUser, error: queryError } = await supabase
-      .from("admin_users")
-      .select("email")
-      .eq("email", email)
-      .eq("password", password)
-      .single()
-
-    if (queryError) {
-      console.log("[v0] Query error:", queryError.message)
-      return { success: false, error: "Invalid login credentials" }
+    if (!url || !key) {
+      console.error("[v0] Missing Supabase credentials:", { hasUrl: !!url, hasKey: !!key })
+      throw new Error("Supabase configuration is missing")
     }
 
-    if (!adminUser) {
-      console.log("[v0] No admin found for:", email)
-      return { success: false, error: "Invalid login credentials" }
-    }
+    const { createClient } = await import("@supabase/supabase-js")
+    const supabaseAuth = createClient(url, key)
 
-    console.log("[v0] Admin login successful for:", email)
-
-    // Set auth cookie
-    const cookieStore = await cookies()
-    cookieStore.set("admin_auth", email, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+    const { data, error } = await supabaseAuth.auth.signInWithPassword({
+      email,
+      password,
     })
 
-    return { success: true, user: { email } }
+    if (error || !data?.user) {
+      return { success: false, error: "Invalid credentials" }
+    }
+
+    return { success: true, user: { id: data.user.id, email: data.user.email } }
   } catch (error) {
-    console.error("[v0] Admin login error:", error)
     return { success: false, error: "Login failed. Please try again." }
   }
 }
