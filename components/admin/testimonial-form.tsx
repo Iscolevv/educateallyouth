@@ -6,17 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { createTestimonial } from "@/app/admin/actions"
 
-export default function TestimonialForm() {
+export default function TestimonialForm({ onSuccess }: { onSuccess?: () => void }) {
   const [name, setName] = useState("")
   const [role, setRole] = useState("")
   const [content, setContent] = useState("")
   const [imageUrl, setImageUrl] = useState("")
   const [rating, setRating] = useState(5)
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,7 +34,7 @@ export default function TestimonialForm() {
       setContent("")
       setImageUrl("")
       setRating(5)
-      router.refresh()
+      onSuccess?.()
     } catch (error) {
       console.error("[v0] Error saving testimonial:", error)
       alert("Error saving testimonial. Please try again.")

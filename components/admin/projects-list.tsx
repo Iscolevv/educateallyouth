@@ -2,11 +2,9 @@
 
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-export default function ProjectsList({ projects }: { projects: any[] }) {
-  const router = useRouter()
+export default function ProjectsList({ projects, onUpdate }: { projects: any[]; onUpdate?: () => void }) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editData, setEditData] = useState<any>({})
 
@@ -21,7 +19,7 @@ export default function ProjectsList({ projects }: { projects: any[] }) {
       return
     }
 
-    router.refresh()
+    onUpdate?.()
   }
 
   const handleEdit = (project: any) => {
@@ -48,7 +46,7 @@ export default function ProjectsList({ projects }: { projects: any[] }) {
     }
 
     setEditingId(null)
-    router.refresh()
+    onUpdate?.()
   }
 
   if (projects.length === 0) {

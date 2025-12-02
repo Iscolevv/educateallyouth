@@ -6,17 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { createProject, updateProject } from "@/app/admin/actions"
 
-export default function ProjectForm({ project }: { project?: any }) {
+export default function ProjectForm({ project, onSuccess }: { project?: any; onSuccess?: () => void }) {
   const [title, setTitle] = useState(project?.title || "")
   const [description, setDescription] = useState(project?.description || "")
   const [imageUrl, setImageUrl] = useState(project?.image_url || "")
   const [status, setStatus] = useState(project?.status || "completed")
   const [beneficiaries, setBeneficiaries] = useState(project?.beneficiaries || 0)
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -61,7 +59,7 @@ export default function ProjectForm({ project }: { project?: any }) {
       setImageUrl("")
       setStatus("completed")
       setBeneficiaries(0)
-      router.refresh()
+      onSuccess?.()
     } catch (error: any) {
       console.error("[v0] Error saving project:", error)
       alert(`Error saving project: ${error.message || "Please try again."}`)
@@ -99,11 +97,7 @@ export default function ProjectForm({ project }: { project?: any }) {
         <Label htmlFor="imageUrl">Project Image</Label>
         {imageUrl && (
           <div className="mb-3">
-            {imageUrl.startsWith("data:") ? (
-              <img src={imageUrl || "/placeholder.svg"} alt="preview" className="w-full h-40 object-cover rounded" />
-            ) : (
-              <img src={imageUrl || "/placeholder.svg"} alt="preview" className="w-full h-40 object-cover rounded" />
-            )}
+            <img src={imageUrl || "/placeholder.svg"} alt="preview" className="w-full h-40 object-cover rounded" />
           </div>
         )}
         <div className="space-y-2">

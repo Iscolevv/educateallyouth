@@ -2,11 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
 
-export default function GalleryList({ gallery }: { gallery: any[] }) {
-  const router = useRouter()
-
+export default function GalleryList({ gallery, onUpdate }: { gallery: any[]; onUpdate?: () => void }) {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this image?")) return
 
@@ -18,7 +15,7 @@ export default function GalleryList({ gallery }: { gallery: any[] }) {
       return
     }
 
-    router.refresh()
+    onUpdate?.()
   }
 
   if (gallery.length === 0) {

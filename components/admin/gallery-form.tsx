@@ -10,7 +10,7 @@ import { createGalleryImage } from "@/app/admin/actions"
 import { Upload, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-export default function GalleryForm() {
+export default function GalleryForm({ onSuccess }: { onSuccess?: () => void }) {
   const [imageUrl, setImageUrl] = useState("")
   const [caption, setCaption] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -28,7 +28,6 @@ export default function GalleryForm() {
           let width = img.width
           let height = img.height
 
-          // Resize if image is too large
           if (width > maxWidth) {
             height = (height * maxWidth) / width
             width = maxWidth
@@ -44,8 +43,6 @@ export default function GalleryForm() {
           }
 
           ctx.drawImage(img, 0, 0, width, height)
-
-          // Convert to base64 with compression
           const compressedDataUrl = canvas.toDataURL("image/jpeg", quality)
           resolve(compressedDataUrl)
         }
@@ -67,7 +64,7 @@ export default function GalleryForm() {
         return
       }
 
-      const maxSize = 10 * 1024 * 1024 // 10MB
+      const maxSize = 10 * 1024 * 1024
       if (file.size > maxSize) {
         setError(`Image is too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Please select an image under 10MB.`)
         return
@@ -107,6 +104,7 @@ export default function GalleryForm() {
       setCaption("")
       setSelectedFile(null)
       alert("Image added successfully!")
+      onSuccess?.()
     } catch (error: any) {
       console.error("[v0] Error adding image:", error)
       const errorMessage = error?.message || "Error adding image. Please try again."

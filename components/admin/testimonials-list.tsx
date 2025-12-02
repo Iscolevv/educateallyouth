@@ -2,11 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
 
-export default function TestimonialsList({ testimonials }: { testimonials: any[] }) {
-  const router = useRouter()
-
+export default function TestimonialsList({ testimonials, onUpdate }: { testimonials: any[]; onUpdate?: () => void }) {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this testimonial?")) return
 
@@ -18,7 +15,7 @@ export default function TestimonialsList({ testimonials }: { testimonials: any[]
       return
     }
 
-    router.refresh()
+    onUpdate?.()
   }
 
   if (testimonials.length === 0) {
@@ -38,7 +35,7 @@ export default function TestimonialsList({ testimonials }: { testimonials: any[]
               />
             ) : (
               <div className="w-12 h-12 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold">
-                {testimonial.name.charAt(0)}
+                {testimonial.name?.charAt(0) || "?"}
               </div>
             )}
             <div className="flex-1">
@@ -46,7 +43,7 @@ export default function TestimonialsList({ testimonials }: { testimonials: any[]
               {testimonial.role && <p className="text-sm text-gray-600">{testimonial.role}</p>}
               <p className="text-gray-600 mt-2">{testimonial.content}</p>
               <div className="flex gap-1 mt-2">
-                {Array.from({ length: testimonial.rating }).map((_, i) => (
+                {Array.from({ length: testimonial.rating || 0 }).map((_, i) => (
                   <span key={i} className="text-yellow-500">
                     ★
                   </span>

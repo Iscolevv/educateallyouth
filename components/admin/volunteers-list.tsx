@@ -2,11 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
 
-export default function VolunteersList({ volunteers }: { volunteers: any[] }) {
-  const router = useRouter()
-
+export default function VolunteersList({ volunteers, onUpdate }: { volunteers: any[]; onUpdate?: () => void }) {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this submission?")) return
 
@@ -18,7 +15,7 @@ export default function VolunteersList({ volunteers }: { volunteers: any[] }) {
       return
     }
 
-    router.refresh()
+    onUpdate?.()
   }
 
   if (volunteers.length === 0) {
