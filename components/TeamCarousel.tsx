@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
+import Image from "next/image"
 
 const TEAM_MEMBERS = [
   {
@@ -13,6 +14,7 @@ const TEAM_MEMBERS = [
     color: "from-teal-600 to-teal-700",
     roleColor: "text-teal-600",
     image: null,
+    altText: "Brian Onyango - Founder and Executive Director of EducateAll Youth Organization Kenya",
     description:
       "Brian Onyango is an alumni of Starehe Boys Centre & School and the Founder of EducateAll Youth Organization. He is passionate about empowering young people through education, mentorship, and community service. He leads the organization's vision and oversees its strategic growth.",
   },
@@ -24,6 +26,8 @@ const TEAM_MEMBERS = [
     color: "from-orange-500 to-orange-600",
     roleColor: "text-orange-600",
     image: "/images/img-20251127-081848.jpg",
+    altText:
+      "Levis Mokaya - Project Manager and Developer at EducateAll Youth Organization, Data Science student University of Nairobi",
     description:
       "Levis Mokaya is a Data Science student at the University of Nairobi and serves as the Project Manager and Developer for EducateAll Youth Organization. He leads the technical direction of the organization, developing systems that connect volunteers, manage projects, and highlight the group's community impact.",
   },
@@ -35,6 +39,8 @@ const TEAM_MEMBERS = [
     color: "from-purple-600 to-purple-700",
     roleColor: "text-purple-600",
     image: "/images/img-20251127-081905.jpg",
+    altText:
+      "Arsene Mwangi - Programs Coordinator at EducateAll Youth Organization, Software Engineering student USIU Africa",
     description:
       "Arsene Mwangi is a Software Engineering student at the United States International University (USIU–Africa) and serves as the Programs Coordinator at Educate All Youth Initiative. Passionate about technology, education, and youth empowerment, Arsene plays a key role in coordinating outreach programs, school partnerships, and innovation-driven initiatives.",
   },
@@ -46,6 +52,8 @@ const TEAM_MEMBERS = [
     color: "from-pink-600 to-pink-700",
     roleColor: "text-pink-600",
     image: "/images/img-20251127-082913.jpg",
+    altText:
+      "Christabel Aloo Ochieng - Events and Mobilization Coordinator at EducateAll Youth Organization, Law student Kisii University",
     description:
       "Christabel Aloo Ochieng is a Law student at Kisii University and serves as the Events & Mobilization Coordinator at EducateAll Youth Initiative. A passionate advocate for political awareness, leadership, and youth empowerment, Christabel plays a vital role in coordinating events and mobilizing audiences.",
   },
@@ -104,24 +112,32 @@ export default function TeamCarousel() {
             <CardContent className="p-8">
               <div className="flex flex-col items-center text-center">
                 {member.image ? (
-                  <img
-                    src={member.image || "/placeholder.svg"}
-                    alt={member.name}
-                    className="w-32 h-32 rounded-full object-cover mb-4 border-4"
-                    style={{
-                      borderColor:
-                        member.roleColor.replace("text-", "").split("-")[0] === "teal"
-                          ? "#14b8a6"
-                          : member.roleColor.includes("orange")
-                            ? "#ea580c"
-                            : member.roleColor.includes("purple")
-                              ? "#a855f7"
-                              : "#ec4899",
-                    }}
-                  />
+                  <div className="relative w-32 h-32 mb-4">
+                    <Image
+                      src={member.image || "/placeholder.svg"}
+                      alt={member.altText}
+                      title={`${member.name} - ${member.role} at EducateAll Youth Organization`}
+                      fill
+                      className="rounded-full object-cover border-4"
+                      style={{
+                        borderColor:
+                          member.roleColor.replace("text-", "").split("-")[0] === "teal"
+                            ? "#14b8a6"
+                            : member.roleColor.includes("orange")
+                              ? "#ea580c"
+                              : member.roleColor.includes("purple")
+                                ? "#a855f7"
+                                : "#ec4899",
+                      }}
+                      sizes="128px"
+                      priority={member.name === "Levis Mokaya"}
+                    />
+                  </div>
                 ) : (
                   <div
                     className={`w-32 h-32 rounded-full bg-gradient-to-br ${member.color} flex items-center justify-center text-white text-4xl font-bold mb-4`}
+                    role="img"
+                    aria-label={member.altText}
                   >
                     {member.initials}
                   </div>

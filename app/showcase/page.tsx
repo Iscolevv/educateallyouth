@@ -1,5 +1,25 @@
 import { createClient } from "@supabase/supabase-js"
 import ShowcaseClient from "@/components/showcase-client"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Creative Showcase | EducateAll Youth Organization",
+  description:
+    "Browse creative submissions from youth empowered by EducateAll Youth Organization. See artwork, stories, and projects from Kenyan students.",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "/showcase",
+  },
+  openGraph: {
+    title: "Creative Showcase | EducateAll Youth Organization",
+    description: "Browse creative submissions from youth empowered by EducateAll Youth Organization.",
+    url: "https://educateallyouth.co.ke/showcase",
+    type: "website",
+  },
+}
 
 export const revalidate = 0
 
