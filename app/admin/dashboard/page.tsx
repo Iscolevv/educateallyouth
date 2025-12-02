@@ -11,8 +11,8 @@ import VolunteerStoriesManager from "@/components/admin/volunteer-stories-manage
 import LearningPostsManager from "@/components/admin/learning-posts-manager"
 import CreativeSubmissionsManager from "@/components/admin/creative-submissions-manager"
 
-export default function AdminDashboard() {
-  const cookieStore = cookies()
+export default async function AdminDashboard() {
+  const cookieStore = await cookies()
   const authCookie = cookieStore.get("admin_auth")
   const isAuthenticated = authCookie?.value === "true"
 
