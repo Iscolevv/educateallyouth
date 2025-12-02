@@ -1,12 +1,28 @@
-import { createClient } from "@/lib/supabase/server"
+"use client"
+
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import GalleryForm from "./gallery-form"
 import GalleryList from "./gallery-list"
 
-export default async function GalleryManager() {
-  const supabase = await createClient()
+export default function GalleryManager() {
+  const [gallery, setGallery] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const { data: gallery } = await supabase.from("gallery").select("*").order("created_at", { ascending: false })
+  useEffect(() => {
+    async function fetchGallery() {
+      const supabase = createClient()
+      const { data } = await supabase.from("gallery").select("*").order("created_at", { ascending: false })
+      setGallery(data || [])
+      setLoading(false)
+    }
+    fetchGallery()
+  }, [])
+
+  if (loading) {
+    return <div className="animate-pulse h-48 bg-gray-100 rounded-lg"></div>
+  }
 
   return (
     <div className="space-y-6">
@@ -24,7 +40,7 @@ export default async function GalleryManager() {
           <CardTitle>Gallery Images</CardTitle>
         </CardHeader>
         <CardContent>
-          <GalleryList gallery={gallery || []} />
+          <GalleryList gallery={gallery} />
         </CardContent>
       </Card>
     </div>
