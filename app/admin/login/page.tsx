@@ -36,7 +36,9 @@ function LoginForm() {
           setError(errorMsg)
         }
       } else {
-        router.push("/admin/dashboard")
+        setTimeout(() => {
+          router.push("/admin/dashboard")
+        }, 500)
       }
     } catch (error: unknown) {
       const errorMsg = error instanceof Error ? error.message : "An error occurred"

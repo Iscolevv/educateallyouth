@@ -11,7 +11,7 @@ export async function verifyAdminAndLogin(email: string, password: string) {
     return { success: false, error: "Invalid email or password" }
   }
 
-  const cookieStore = await cookies()
+  const cookieStore = cookies()
   cookieStore.set("admin_auth", "true", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
