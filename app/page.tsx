@@ -30,6 +30,7 @@ import { TestimonialsCarousel } from "@/components/testimonials-carousel" // Add
 import { NewsEventsSection } from "@/components/news-events-section" // Import the new client-side NewsEventsSection component instead of rendering inline
 import { unstable_noStore as noStore } from "next/cache"
 import { HomepageWrapper } from "@/components/homepage-wrapper" // Assuming HomepageWrapper is correctly imported
+import { GallerySection } from "@/components/gallery-section" // ADDED IMPORT
 
 export const revalidate = 60
 export const dynamic = "force-static" // Changed from "force-dynamic"
@@ -50,8 +51,8 @@ async function HomePageContent({
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header/Navigation */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <svg width="280" height="80" viewBox="0 0 350 80" className="w-auto h-12" fill="none">
@@ -71,52 +72,98 @@ async function HomePageContent({
                 </text>
                 <line x1="0" y1="65" x2="220" y2="65" stroke="#FCD34D" strokeWidth="2" />
               </svg>
-              <span className="font-semibold text-gray-900 hidden sm:inline">EducateAll Youth</span>
             </div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-6">
-              <a href="#about" className="text-gray-700 hover:text-teal-600 transition-colors">
-                About
-              </a>
-              <a href="#story" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Our Story
-              </a>
-              <a href="#projects" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Projects
-              </a>
-              <a href="#gallery" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Gallery
-              </a>
-              <a href="#testimonials" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Testimonials
-              </a>
-              <a href="#team" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Meet the Team
-              </a>
-              <Link href="/learning-hub" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Learning Hub
-              </Link>
-              <Link href="/showcase" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Youth Showcase
-              </Link>
-              <a href="#volunteer" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Volunteer
-              </a>
-              <a href="#news" className="text-gray-700 hover:text-teal-600 transition-colors">
-                News & Events
-              </a>
-              <a href="#donate" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Support & Donate
-              </a>
+            <div className="hidden lg:flex items-center">
+              <div className="flex items-center bg-gray-50/80 rounded-full px-2 py-1.5 gap-1">
+                <a
+                  href="#about"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 hover:bg-white rounded-full transition-all duration-200"
+                >
+                  About
+                </a>
+                <a
+                  href="#story"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 hover:bg-white rounded-full transition-all duration-200"
+                >
+                  Our Story
+                </a>
+                <a
+                  href="#projects"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 hover:bg-white rounded-full transition-all duration-200"
+                >
+                  Projects
+                </a>
+                <a
+                  href="#gallery"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 hover:bg-white rounded-full transition-all duration-200"
+                >
+                  Gallery
+                </a>
+                <a
+                  href="#testimonials"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 hover:bg-white rounded-full transition-all duration-200"
+                >
+                  Testimonials
+                </a>
+                <a
+                  href="#team"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 hover:bg-white rounded-full transition-all duration-200"
+                >
+                  Team
+                </a>
+              </div>
+
+              <div className="w-px h-6 bg-gray-200 mx-3" />
+
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/learning-hub"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 hover:bg-gray-50 rounded-full transition-all duration-200"
+                >
+                  Learning Hub
+                </Link>
+                <Link
+                  href="/showcase"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 hover:bg-gray-50 rounded-full transition-all duration-200"
+                >
+                  Showcase
+                </Link>
+                <a
+                  href="#volunteer"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 hover:bg-gray-50 rounded-full transition-all duration-200"
+                >
+                  Volunteer
+                </a>
+                <a
+                  href="#news"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 hover:bg-gray-50 rounded-full transition-all duration-200"
+                >
+                  News
+                </a>
+                <a
+                  href="#donate"
+                  className="px-4 py-2 text-sm font-medium text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded-full transition-all duration-200"
+                >
+                  Donate
+                </a>
+              </div>
+
+              <div className="w-px h-6 bg-gray-200 mx-3" />
+
               <Link href="/admin/login">
-                <Button className="bg-teal-600 hover:bg-teal-700 text-white">Admin</Button>
+                <Button
+                  size="sm"
+                  className="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white rounded-full px-5 shadow-md hover:shadow-lg transition-all duration-200"
+                >
+                  Admin
+                </Button>
               </Link>
             </div>
 
             {/* Mobile Navigation - Modernized with icons, better spacing, and visual hierarchy */}
             <Sheet>
-              <SheetTrigger asChild className="md:hidden">
+              <SheetTrigger asChild className="lg:hidden">
                 <Button variant="ghost" size="icon" className="hover:bg-teal-50">
                   <Menu className="h-6 w-6 text-teal-600" />
                 </Button>
@@ -517,38 +564,8 @@ async function HomePageContent({
         </div>
       </section>
       {/* Gallery Section */}
-      <section id="gallery" className="py-16 md:py-24 bg-white scroll-mt-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4 text-balance fade-in-up">
-            Gallery
-          </h2>
-          <p className="text-center text-gray-600 max-w-2xl mx-auto mb-12 text-lg fade-in-up">
-            Check out these amazing moments captured from our programs, events, and the incredible journey of empowering
-            youth across our community! Every picture tells a story of transformation and hope.
-          </p>
+      <GallerySection gallery={gallery} />
 
-          {gallery && gallery.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {gallery.map((image) => (
-                <div key={image.id} className="overflow-hidden rounded-lg group fade-in-up">
-                  <div className="aspect-square overflow-hidden">
-                    <img
-                      src={image.image_url || "/placeholder.svg"}
-                      alt={image.caption || "Gallery image"}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
-                  {image.caption && <div className="bg-gray-100 p-3 text-gray-700 text-sm">{image.caption}</div>}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No images in gallery yet. Check back soon!</p>
-            </div>
-          )}
-        </div>
-      </section>
       {/* Testimonials Section - MOVED */}
       <section id="testimonials" className="py-16 md:py-24 bg-white scroll-mt-20">
         <div className="container mx-auto px-4">
