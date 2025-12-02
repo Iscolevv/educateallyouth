@@ -1,5 +1,7 @@
-import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ProjectsManager from "@/components/admin/projects-manager"
 import NewsEventsManager from "@/components/admin/news-events-manager"
@@ -11,18 +13,44 @@ import VolunteerStoriesManager from "@/components/admin/volunteer-stories-manage
 import LearningPostsManager from "@/components/admin/learning-posts-manager"
 import CreativeSubmissionsManager from "@/components/admin/creative-submissions-manager"
 
-export default async function AdminDashboard() {
-  const cookieStore = await cookies()
-  const authCookie = cookieStore.get("admin_auth")
-  const isAuthenticated = authCookie?.value === "true"
+export default function AdminDashboard() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+  const [userEmail, setUserEmail] = useState("")
+  const router = useRouter()
 
+  useEffect(() => {
+    const authStatus = localStorage.getItem("admin_authenticated")
+    const email = localStorage.getItem("admin_email")
+
+    if (authStatus === "true" && email) {
+      setIsAuthenticated(true)
+      setUserEmail(email)
+    } else {
+      setIsAuthenticated(false)
+      router.push("/admin/login")
+    }
+  }, [router])
+
+  // Show loading while checking auth
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // If not authenticated, show nothing (will redirect)
   if (!isAuthenticated) {
-    redirect("/admin/login?error=unauthorized")
+    return null
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AdminHeader userEmail="educateallyouthorganization@gmail.com" />
+      <AdminHeader userEmail={userEmail} />
 
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>

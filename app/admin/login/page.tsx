@@ -8,6 +8,9 @@ import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
+const ADMIN_EMAIL = "educateallyouthorganization@gmail.com"
+const ADMIN_PASSWORD = "eayo2025"
+
 export default function Page() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -15,28 +18,19 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
 
-    try {
-      const response = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        router.push("/admin/dashboard")
-      } else {
-        setError(result.error || "Invalid credentials")
-      }
-    } catch (err) {
-      setError("Login failed. Please try again.")
-    } finally {
+    if (email.toLowerCase().trim() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      // Store auth in localStorage
+      localStorage.setItem("admin_authenticated", "true")
+      localStorage.setItem("admin_email", email)
+      // Redirect immediately
+      window.location.href = "/admin/dashboard"
+    } else {
+      setError("Invalid email or password")
       setIsLoading(false)
     }
   }
