@@ -6,7 +6,6 @@ export async function verifyAdminAndLogin(email: string, password: string) {
   const ADMIN_EMAIL = "educateallyouthorganization@gmail.com"
   const ADMIN_PASSWORD = "eayo2025"
 
-  // Simple exact match check
   if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
     return { success: false, error: "Invalid email or password" }
   }
@@ -16,7 +15,7 @@ export async function verifyAdminAndLogin(email: string, password: string) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    maxAge: 60 * 60 * 24 * 7,
   })
 
   return { success: true }
