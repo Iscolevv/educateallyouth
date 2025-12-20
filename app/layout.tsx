@@ -28,6 +28,11 @@ export const metadata: Metadata = {
     "leadership development Kenya",
     "Brian Onyango EducateAll",
     "Levis Mokaya developer",
+    "Levis Mokaya ShuleTech Solutions",
+    "Levis Mokaya Talk Africa",
+    "Levis Mokaya Kenyan innovator",
+    "Levis Mokaya technology education",
+    "ShuleTech Solutions Kenya",
     "Starehe Boys Centre alumni",
     "University of Nairobi students",
   ],
@@ -174,24 +179,72 @@ export default function RootLayout({
                   name: "Levis Mokaya",
                   givenName: "Levis",
                   familyName: "Mokaya",
-                  jobTitle: "Project Manager & Developer",
+                  jobTitle: ["Project Manager & Developer", "Founder & CEO"],
                   description:
-                    "Levis Mokaya is a Data Science student at the University of Nairobi and serves as the Project Manager and Developer for EducateAll Youth Organization. He leads the technical direction of the organization.",
+                    "Levis Mokaya is a Kenyan innovator, Data Science student at the University of Nairobi, and serves as the Project Manager and Developer for EducateAll Youth Organization. He is also the Founder and CEO of ShuleTech Solutions, a technology company focused on educational transformation. Featured in Talk Africa for using technology to drive social impact and educational transformation in Kenya.",
                   image: {
                     "@type": "ImageObject",
                     url: "https://educateallyouth.co.ke/images/img-20251127-081848.jpg",
-                    caption: "Levis Mokaya - Project Manager & Developer at EducateAll Youth Organization",
+                    caption:
+                      "Levis Mokaya - Project Manager & Developer at EducateAll Youth Organization, Founder of ShuleTech Solutions",
                   },
-                  affiliation: {
-                    "@type": "Organization",
-                    name: "EducateAll Youth Organization",
-                  },
+                  affiliation: [
+                    {
+                      "@type": "Organization",
+                      name: "EducateAll Youth Organization",
+                      url: "https://educateallyouth.co.ke",
+                    },
+                    {
+                      "@type": "Organization",
+                      name: "ShuleTech Solutions",
+                      url: "https://shuletechsolutions.co.ke",
+                    },
+                  ],
                   alumniOf: {
                     "@type": "CollegeOrUniversity",
                     name: "University of Nairobi",
                   },
-                  knowsAbout: ["Data Science", "Web Development", "Project Management"],
-                  sameAs: ["https://www.linkedin.com/in/levis-mokaya"],
+                  knowsAbout: [
+                    "Data Science",
+                    "Web Development",
+                    "Project Management",
+                    "Educational Technology",
+                    "Social Impact",
+                    "Innovation",
+                  ],
+                  owns: {
+                    "@type": "Organization",
+                    "@id": "https://shuletechsolutions.co.ke/#organization",
+                    name: "ShuleTech Solutions",
+                    url: "https://shuletechsolutions.co.ke",
+                    description: "Technology company focused on educational transformation and social impact in Kenya",
+                    founder: {
+                      "@type": "Person",
+                      name: "Levis Mokaya",
+                    },
+                  },
+                  award: "Featured in Talk Africa - Kenyan Innovator Drives Change with Tech for Education",
+                  sameAs: [
+                    "https://www.linkedin.com/in/levis-mokaya",
+                    "https://www.talkafrica.co.ke/kenyan-innovator-levis-mokaya-uses-technology-to-drive-social-impact-and-educational-transformation/",
+                    "https://shuletechsolutions.co.ke",
+                  ],
+                  subjectOf: {
+                    "@type": "NewsArticle",
+                    headline: "Kenyan Innovator Drives Change with Tech for Education",
+                    url: "https://www.talkafrica.co.ke/kenyan-innovator-levis-mokaya-uses-technology-to-drive-social-impact-and-educational-transformation/",
+                    publisher: {
+                      "@type": "Organization",
+                      name: "Talk Africa",
+                    },
+                    about: [
+                      "Educational Technology",
+                      "Social Impact",
+                      "Innovation in Kenya",
+                      "ShuleTech Solutions",
+                      "EducateAll Youth Organization",
+                    ],
+                  },
                 },
                 {
                   "@type": "Person",
@@ -267,17 +320,70 @@ export default function RootLayout({
               contentUrl: "https://educateallyouth.co.ke/images/img-20251127-081848.jpg",
               name: "Levis Mokaya Photo",
               description:
-                "Levis Mokaya - Project Manager and Developer at EducateAll Youth Organization, Data Science student at University of Nairobi",
-              caption: "Levis Mokaya, Project Manager & Developer at EducateAll Youth Organization",
+                "Levis Mokaya - Kenyan innovator, Project Manager and Developer at EducateAll Youth Organization, Founder & CEO of ShuleTech Solutions, Data Science student at University of Nairobi. Featured in Talk Africa for using technology to drive social impact and educational transformation in Kenya.",
+              caption:
+                "Levis Mokaya, Project Manager & Developer at EducateAll Youth Organization, Founder of ShuleTech Solutions",
+              keywords: [
+                "Levis Mokaya",
+                "ShuleTech Solutions",
+                "EducateAll Youth Organization",
+                "Kenyan innovator",
+                "educational technology",
+                "social impact",
+              ],
               creator: {
                 "@type": "Person",
                 name: "Levis Mokaya",
+                sameAs: [
+                  "https://shuletechsolutions.co.ke",
+                  "https://www.talkafrica.co.ke/kenyan-innovator-levis-mokaya-uses-technology-to-drive-social-impact-and-educational-transformation/",
+                ],
               },
               copyrightHolder: {
                 "@type": "Organization",
                 name: "EducateAll Youth Organization",
               },
               representativeOfPage: false,
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "@id": "https://shuletechsolutions.co.ke/#organization",
+              name: "ShuleTech Solutions",
+              alternateName: ["Shule Tech", "ShuleTech"],
+              url: "https://shuletechsolutions.co.ke",
+              description:
+                "ShuleTech Solutions is a technology company founded by Levis Mokaya, focused on educational transformation and social impact through technology in Kenya.",
+              founder: {
+                "@type": "Person",
+                "@id": "https://educateallyouth.co.ke/#levis-mokaya",
+                name: "Levis Mokaya",
+                jobTitle: "Founder & CEO",
+                sameAs: [
+                  "https://educateallyouth.co.ke",
+                  "https://www.talkafrica.co.ke/kenyan-innovator-levis-mokaya-uses-technology-to-drive-social-impact-and-educational-transformation/",
+                ],
+              },
+              knowsAbout: [
+                "Educational Technology",
+                "Web Development",
+                "Software Solutions",
+                "Social Impact Technology",
+                "Innovation",
+              ],
+              areaServed: {
+                "@type": "Country",
+                name: "Kenya",
+              },
+              parentOrganization: {
+                "@type": "Person",
+                name: "Levis Mokaya",
+              },
             }),
           }}
         />
