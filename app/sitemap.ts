@@ -11,6 +11,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0, // Homepage is highest priority
     },
     {
+      url: `${baseUrl}/festive-greetings`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/volunteer-stories`,
       lastModified: new Date(),
       changeFrequency: "weekly",

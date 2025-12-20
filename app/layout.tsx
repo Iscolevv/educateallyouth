@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { BackButtonRefresh } from "@/components/back-button-refresh"
+import { FestiveBanner } from "@/components/festive-banner"
 
 export const metadata: Metadata = {
   title: "EducateAll Youth Organization | Empowering Youth Through Education in Kenya",
@@ -305,6 +306,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <BackButtonRefresh />
+        <FestiveBanner />
         {children}
         <Analytics />
       </body>
